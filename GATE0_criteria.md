@@ -125,3 +125,54 @@ magnitude são resultado, não premissa — publicar qualquer que seja o sinal.
 
 Após revisão: `sha256sum GATE0_criteria.md` registrado em local público
 (gist ou primeiro commit do repo) antes da primeira medição de S-A/S-B.
+
+---
+
+## ADENDOS (datados; o corpo acima permanece selado)
+
+### A1 — 2026-07-28 — Pins de sujeitos e GT (cumpre C2 parcial)
+- S-A winding-sync: commit 25842b6 (abundantjoe/winding-sync).
+- GT-1 Paris 4 relative_windings.json: snapshot local validado em
+  28/07 (2173 pontos, 254 collections, 8156 pares dw 1-6; reproduz os
+  706 pares da janela z10000-11000 do trabalho de julho). Hash do
+  arquivo a registrar no primeiro run pontuado.
+
+### A2 — 2026-07-28 — tau local (motivado por Paul Henderson, #general)
+Limitacao reconhecida do 3.3: tau derivado do pitch MEDIANO pode
+cruzar folha onde o empacotamento local aperta (espacamento varia ~4x
+dentro de um crop; binning radial do Paris 4 corre 136-259 um).
+Mitigacoes ja em vigor: pares sem match custam cobertura e nunca
+acuracia (3.4); o CSV por-par grava as duas distancias de match, entao
+matches em regiao apertada sao auditaveis.
+Correcao adotada: tau LOCAL derivado do espacamento local (raio-
+dependente no Paris 4 via o binning radial ja medido; regra geral a
+especificar em A2.1 antes do primeiro numero publico). O tau mediano
+do 3.3 permanece como fallback onde nao ha medida local. Nenhum numero
+publico sai antes de A2.1 estar commitado.
+
+### A3 — 2026-07-28 — meshes GP como fonte de GT prioritaria
+(motivado por sean/bruniss, Paul Henderson e djosey, #general)
+GT-3 promovida: segmentos GP verificados por humanos do Paris 4 (lista
+do sean, com overlap de wrap na emenda a descontar) e o tifxyz merged
+do PHerc1667 (djosey; sem overlap). GT densa de superficie carrega
+continuidade de folha que pontos esparsos nao tem, e viabiliza tau
+apertado. As point collections (GT-1/GT-2) permanecem validas; a
+extracao de pares das meshes sera especificada em A3.1 com a regra de
+overlap explicita.
+
+### A4 — 2026-07-28 — sujeitos adicionais
+- S-D: estimador E1 do winding-ruler (autor deste benchmark).
+  Reportado em duas linhas: in-sample (706 pares z10000-11000, usados
+  no desenvolvimento) e held-out (todos os demais pares, nunca vistos).
+  So a linha held-out e comparavel aos outros sujeitos.
+- S-E: variante angle-binned radial pitch de alyalya
+  (abundantjoe/winding-sync#1), a convite aceito em #general.
+
+### A5 — 2026-07-28 — parametros operacionais do primeiro run Paris 4
+pitch-um 180 (ancora humana; apenas tolerancia de matching, nao
+evidencia), um-per-vox 2.4. Registrado que qualquer valor em 175-190
+da os mesmos vereditos via o diagnostico tau/2-2tau do 3.6.
+
+### A6 — 2026-07-28 — confianca por par (decisao de implementacao)
+conf_par = min(conf_a, conf_b): o par vale o que vale sua ponta mais
+fraca. Fixado antes de qualquer medicao de sujeito externo.
