@@ -1,0 +1,13 @@
+{
+  "axis": "auto",
+  "um_per_vox": 2.4,
+  "bins_mm": [
+    [0, 4, 136],
+    [4, 7, 154],
+    [7, 10, 177],
+    [10, 13, 195],
+    [13, 16, 213],
+    [16, 20, 259]
+  ],
+  "source": "radial binning of the PHerc Paris 4 human annotated winding pairs, July 2026 (pscamillo/IyanDopico measurement, cited in DomRusso2/sheetcheck retraction); pitch in um per bin of axis distance in mm"
+}

@@ -36,12 +36,23 @@ def build_adapter(spec):
     raise SystemExit(f"unknown adapter spec: {spec}")
 
 
-def run(gt_path, adapter, pitch_um, um_per_vox, p_order, out_prefix):
+def run(gt_path, adapter, pitch_um, um_per_vox, p_order, out_prefix,
+        pitch_table=None):
     xyz, wind, coll = gt_mod.load_points(gt_path, p_order=p_order)
     pairs = gt_mod.build_pairs(xyz, wind, coll)
-    tau = match.tau_vox(pitch_um, um_per_vox)
-    print(f"gt: {len(xyz)} points, {len(pairs['dw'])} pairs; "
-          f"tau = {tau:.1f} vox")
+    tau_med = match.tau_vox(pitch_um, um_per_vox)
+    if pitch_table:
+        from gauge.localtau import PitchTable
+        pt = PitchTable.load(pitch_table, median_um=pitch_um)
+        pt.resolve_axis(xyz)
+        tau = pt.tau_vox_at(xyz)                  # per-GT-point (A2.1)
+        print(f"gt: {len(xyz)} points, {len(pairs['dw'])} pairs; "
+              f"local tau {tau.min():.1f}-{tau.max():.1f} vox "
+              f"(median fallback {tau_med:.1f})")
+    else:
+        tau = tau_med
+        print(f"gt: {len(xyz)} points, {len(pairs['dw'])} pairs; "
+              f"tau = {tau_med:.1f} vox")
 
     for label, t in [("tau/2", tau / 2), ("tau", tau), ("2tau", tau * 2)]:
         mres = match.match(xyz, pairs, adapter, t)
@@ -54,7 +65,8 @@ def run(gt_path, adapter, pitch_um, um_per_vox, p_order, out_prefix):
         if label == "tau":
             metrics.write_csv(f"{out_prefix}_pairs.csv", table)
             summ["adapter"] = adapter.name
-            summ["tau_vox"] = tau
+            summ["tau_vox"] = float(np.mean(t)) if hasattr(t, "__len__") else t
+            summ["tau_mode"] = "local" if pitch_table else "median"
             summ["pitch_um"] = pitch_um
             summ["um_per_vox"] = um_per_vox
             json.dump(summ, open(f"{out_prefix}_summary.json", "w"),
@@ -72,9 +84,11 @@ def main():
     ap.add_argument("--um-per-vox", type=float, required=True)
     ap.add_argument("--p-order", default="xyz", choices=["xyz", "zyx"])
     ap.add_argument("--out-prefix", default="gauge_run")
+    ap.add_argument("--pitch-table", default=None,
+                    help="per-scroll radial pitch table json (A2.1 local tau)")
     a = ap.parse_args()
     run(a.gt, build_adapter(a.adapter), a.pitch_um, a.um_per_vox,
-        a.p_order, a.out_prefix)
+        a.p_order, a.out_prefix, pitch_table=a.pitch_table)
 
 
 if __name__ == "__main__":

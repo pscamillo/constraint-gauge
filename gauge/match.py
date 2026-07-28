@@ -27,19 +27,24 @@ class MatchResult:
 
 
 def _nearest(query_xyz, points_xyz, tau):
-    """Nearest adapter point within tau for each query. Brute force is
-    fine at these sizes (hundreds of GT points, tens of thousands of
-    seeds); swap in a KD-tree only if it ever matters."""
+    """Nearest adapter point within tau for each query. tau may be a
+    scalar or a per-query array (A2.1 local tau). Brute force is fine at
+    these sizes; swap in a KD-tree only if it ever matters."""
     q = np.asarray(query_xyz)[:, None, :]          # (Q, 1, 3)
     d2 = ((q - points_xyz[None, :, :]) ** 2).sum(-1)
     idx = np.argmin(d2, axis=1)                    # smallest index on ties
     dist = np.sqrt(d2[np.arange(len(q)), idx])
-    ok = dist <= tau
+    ok = dist <= np.asarray(tau)                   # broadcasts either way
     return np.where(ok, idx, -1), np.where(ok, dist, np.inf)
 
 
 def match(gt_xyz, pairs, adapter, tau):
-    a_pt, a_d = _nearest(gt_xyz[pairs["a"]], adapter.points_xyz, tau)
-    b_pt, b_d = _nearest(gt_xyz[pairs["b"]], adapter.points_xyz, tau)
+    """tau: scalar (3.3) or per-GT-point array indexed like gt_xyz
+    (A2.1). With an array, each pair endpoint uses its own tolerance."""
+    tau = np.asarray(tau)
+    tau_a = tau if tau.ndim == 0 else tau[pairs["a"]]
+    tau_b = tau if tau.ndim == 0 else tau[pairs["b"]]
+    a_pt, a_d = _nearest(gt_xyz[pairs["a"]], adapter.points_xyz, tau_a)
+    b_pt, b_d = _nearest(gt_xyz[pairs["b"]], adapter.points_xyz, tau_b)
     scorable = (a_pt >= 0) & (b_pt >= 0)
     return MatchResult(scorable, a_pt, b_pt, a_d, b_d)

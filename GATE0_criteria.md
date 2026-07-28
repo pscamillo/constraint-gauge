@@ -176,3 +176,15 @@ da os mesmos vereditos via o diagnostico tau/2-2tau do 3.6.
 ### A6 — 2026-07-28 — confianca por par (decisao de implementacao)
 conf_par = min(conf_a, conf_b): o par vale o que vale sua ponta mais
 fraca. Fixado antes de qualquer medicao de sujeito externo.
+
+### A2.1 — 2026-07-28 — regra do tau local (implementa A2)
+tau(p) = 0.5 x pitch_local(r(p)); r = distancia in-plane ao eixo do
+scroll (config por scroll ou mediana (x,y) do GT); pitch_local por
+lookup em tabela radial MEDIDA por scroll (data/paris4_pitch_table.json
+para o Paris 4, do binning dos pares humanos de julho, 136-259 um).
+Extrapolacao pelo bin mais proximo nas duas pontas da tabela — abaixo
+do bin interno a mediana seria mais frouxa que o pitch local, que e o
+exato risco de cruzar folha; a mediana do 3.3 so se aplica sem tabela.
+Demonstrado em tests/test_localtau.py: tau mediano envenenado por
+matches cruzando folha (M1 0.840), tau local limpo (M1 1.000) ao custo
+de cobertura (0.830 -> 0.757). Numeros publicos desbloqueados.
