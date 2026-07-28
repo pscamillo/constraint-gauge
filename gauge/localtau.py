@@ -50,10 +50,13 @@ def gt_local_tau(gt_xyz, wind, coll, um_per_vox=None):
             continue
         P = gt_xyz[idx]
         W = wind[idx]
-        d2 = ((P[:, None, :] - P[None, :, :]) ** 2).sum(-1)
-        adj = np.abs(W[:, None] - W[None, :]) == 1
-        d2 = np.where(adj, d2, np.inf)
-        best = d2.min(axis=1)
+        best = np.full(len(idx), np.inf)
+        for a in range(0, len(idx), 2000):
+            b = min(a + 2000, len(idx))
+            d2 = ((P[a:b, None, :] - P[None, :, :]) ** 2).sum(-1)
+            adj = np.abs(W[a:b, None] - W[None, :]) == 1
+            d2 = np.where(adj, d2, np.inf)
+            best[a:b] = d2.min(axis=1)
         ok = np.isfinite(best)
         tau[idx[ok]] = 0.5 * np.sqrt(best[ok])
     return tau

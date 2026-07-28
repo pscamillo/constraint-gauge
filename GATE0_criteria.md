@@ -202,3 +202,23 @@ tau_mediano 3.3) — o mais apertado vence; apertado custa cobertura,
 nunca acuracia. Demonstrado em tests/test_gt_tau.py: definido em 100%
 dos pontos do sintetico, M1 1.000 sem geometria alguma. A tabela
 radial do A2.1 fica rebaixada a fallback.
+
+### A3.1 — 2026-07-28 — extracao de GT das meshes verificadas
+(implementa A3; regra sem geometria, coerente com A2.2)
+Fonte: segmentos GP verificados por humanos, formato tifxyz, na
+variante registrada no mesmo volume das anotacoes quando existir
+(PHercParis4/segments/<id>/mesh/<id>-on-<volume>-<um>.tifxyz).
+Atribuicao de winding SEM eixo e SEM constante: ao longo da linha media
+do eixo de arco, cadeia de auto-proximidade — o proximo no e o ponto
+3D mais proximo entre os que ja deram a volta (corda < 0.5 x arco,
+criterio adimensional); winding(u) = indice do intervalo da cadeia. A
+malha conta as proprias voltas.
+Overlap (aviso do sean): cada mesh e uma collection isolada, pares
+entre meshes nao existem; primeira e ultima volta descartadas por
+padrao (trim=1). O tifxyz merged do 1667 (djosey) roda com trim=0.
+Frames: cada braco de GT pontua no frame do volume em que a mesh esta
+registrada; nao se comparam frames diferentes.
+Validado em 20231022170901 (Paris 4): 8 voltas detectadas, batendo a
+contagem independente de alyalya em #general; arcos por volta
+monotonicos 16511 -> 12264 vox; 41755 pontos pos-trim, ~19x a
+densidade do braco de anotacoes.

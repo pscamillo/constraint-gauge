@@ -26,15 +26,21 @@ class MatchResult:
     b_dist: np.ndarray
 
 
-def _nearest(query_xyz, points_xyz, tau):
+def _nearest(query_xyz, points_xyz, tau, chunk=2000):
     """Nearest adapter point within tau for each query. tau may be a
-    scalar or a per-query array (A2.1 local tau). Brute force is fine at
-    these sizes; swap in a KD-tree only if it ever matters."""
-    q = np.asarray(query_xyz)[:, None, :]          # (Q, 1, 3)
-    d2 = ((q - points_xyz[None, :, :]) ** 2).sum(-1)
-    idx = np.argmin(d2, axis=1)                    # smallest index on ties
-    dist = np.sqrt(d2[np.arange(len(q)), idx])
-    ok = dist <= np.asarray(tau)                   # broadcasts either way
+    scalar or a per-query array (A2.1 local tau). Chunked brute force:
+    memory stays bounded at chunk x N."""
+    q = np.asarray(query_xyz)
+    tau = np.asarray(tau)
+    idx = np.empty(len(q), dtype=int)
+    dist = np.empty(len(q))
+    for a in range(0, len(q), chunk):
+        b = min(a + chunk, len(q))
+        d2 = ((q[a:b, None, :] - points_xyz[None, :, :]) ** 2).sum(-1)
+        i = np.argmin(d2, axis=1)              # smallest index on ties
+        idx[a:b] = i
+        dist[a:b] = np.sqrt(d2[np.arange(b - a), i])
+    ok = dist <= (tau if tau.ndim else np.full(len(q), float(tau)))
     return np.where(ok, idx, -1), np.where(ok, dist, np.inf)
 
 
