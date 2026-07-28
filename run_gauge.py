@@ -41,18 +41,21 @@ def run(gt_path, adapter, pitch_um, um_per_vox, p_order, out_prefix,
     xyz, wind, coll = gt_mod.load_points(gt_path, p_order=p_order)
     pairs = gt_mod.build_pairs(xyz, wind, coll)
     tau_med = match.tau_vox(pitch_um, um_per_vox)
+    from gauge.localtau import gt_local_tau, combine_tau
+    tau_gt = gt_local_tau(xyz, wind, coll)          # A2.2 primary
+    cands = [tau_gt]
     if pitch_table:
         from gauge.localtau import PitchTable
         pt = PitchTable.load(pitch_table, median_um=pitch_um)
         pt.resolve_axis(xyz)
-        tau = pt.tau_vox_at(xyz)                  # per-GT-point (A2.1)
-        print(f"gt: {len(xyz)} points, {len(pairs['dw'])} pairs; "
-              f"local tau {tau.min():.1f}-{tau.max():.1f} vox "
-              f"(median fallback {tau_med:.1f})")
-    else:
-        tau = tau_med
-        print(f"gt: {len(xyz)} points, {len(pairs['dw'])} pairs; "
-              f"tau = {tau_med:.1f} vox")
+        cands.append(pt.tau_vox_at(xyz))            # A2.1 fallback
+    cands.append(np.full(len(xyz), tau_med))        # 3.3 last resort
+    tau = combine_tau(*cands)
+    n_gt = int(np.isfinite(tau_gt).sum())
+    print(f"gt: {len(xyz)} points, {len(pairs['dw'])} pairs; "
+          f"tau A2.2 on {n_gt}/{len(xyz)} points, "
+          f"range {tau.min():.1f}-{tau.max():.1f} vox "
+          f"(median fallback {tau_med:.1f})")
 
     for label, t in [("tau/2", tau / 2), ("tau", tau), ("2tau", tau * 2)]:
         mres = match.match(xyz, pairs, adapter, t)

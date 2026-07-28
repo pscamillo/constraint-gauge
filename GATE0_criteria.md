@@ -188,3 +188,17 @@ exato risco de cruzar folha; a mediana do 3.3 so se aplica sem tabela.
 Demonstrado em tests/test_localtau.py: tau mediano envenenado por
 matches cruzando folha (M1 0.840), tau local limpo (M1 1.000) ao custo
 de cobertura (0.830 -> 0.757). Numeros publicos desbloqueados.
+
+### A2.2 — 2026-07-28 — tau das anotacoes (motivado por sean/bruniss e
+Paul Henderson, #general; substitui A2.1 como regra primaria)
+Critica aceita: espacamento winding-a-winding nao e uma constante com
+significado, e raio ao umbilicus nao correlaciona com winding sob
+deformacao (o crop do Paul demonstra variacao drastica em curta
+distancia). Regra nova, sem geometria: tau(p) = 0.5 x distancia ao
+ponto anotado mais proximo em winding adjacente na MESMA collection —
+medido no ponto, sem constante, sem eixo, sem modelo radial. Cadeia de
+fallback onde a anotacao e esparsa: min(tau_anotacao, tau_tabela A2.1,
+tau_mediano 3.3) — o mais apertado vence; apertado custa cobertura,
+nunca acuracia. Demonstrado em tests/test_gt_tau.py: definido em 100%
+dos pontos do sintetico, M1 1.000 sem geometria alguma. A tabela
+radial do A2.1 fica rebaixada a fallback.

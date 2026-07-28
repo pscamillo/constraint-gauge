@@ -30,6 +30,46 @@ import json
 import numpy as np
 
 
+def gt_local_tau(gt_xyz, wind, coll, um_per_vox=None):
+    """A2.2: tolerance measured from the annotations themselves.
+
+    For each GT point, find the nearest annotated point in the SAME
+    collection whose winding differs by exactly 1; tau at that point is
+    half that distance. No spacing constant, no axis, no radial model:
+    the annotations state directly how far the neighboring sheet is at
+    each annotated location. Points with no adjacent-winding neighbor
+    in their collection get nan (caller falls back).
+
+    Returns tau_vox (N,) with nan where undefined.
+    """
+    n = len(gt_xyz)
+    tau = np.full(n, np.nan)
+    for cid in np.unique(coll):
+        idx = np.nonzero(coll == cid)[0]
+        if len(idx) < 2:
+            continue
+        P = gt_xyz[idx]
+        W = wind[idx]
+        d2 = ((P[:, None, :] - P[None, :, :]) ** 2).sum(-1)
+        adj = np.abs(W[:, None] - W[None, :]) == 1
+        d2 = np.where(adj, d2, np.inf)
+        best = d2.min(axis=1)
+        ok = np.isfinite(best)
+        tau[idx[ok]] = 0.5 * np.sqrt(best[ok])
+    return tau
+
+
+def combine_tau(*candidates):
+    """Tightest available estimate wins (A2.2): elementwise nanmin of
+    scalar or per-point candidates. Tighter costs coverage, never
+    accuracy."""
+    arrs = [np.asarray(c, dtype=float) for c in candidates if c is not None]
+    n = max((a.shape[0] for a in arrs if a.ndim), default=1)
+    stack = np.vstack([np.broadcast_to(a, (n,)) for a in arrs])
+    out = np.nanmin(stack, axis=0)
+    return out
+
+
 class PitchTable:
     def __init__(self, axis, um_per_vox, bins_mm, median_um):
         self.axis = axis                      # None => auto from GT
