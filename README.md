@@ -10,10 +10,11 @@ generator. No shared instrument for that exists. This is one.
 
 ## How it works
 
-Ground truth: human winding annotations from the published point
-collections (PHerc Paris 4, 8156 within-collection pairs at dw 1-6) and
-the stitched instance labels on PHerc1218 (9k pairs). GP segment meshes
-are the next source, with wrap overlap accounted for.
+Ground truth, two arms. Human point collections (PHerc Paris 4, 8156
+within-collection pairs at dw 1-6). And human-verified segment meshes,
+which state sheet identity by construction and come about 19x denser:
+the extractor counts a segment's own wraps with no axis and no spacing
+constant, one collection per mesh, seam wraps trimmed.
 
 A generator provides points, a winding number per point, and a
 confidence per point. That's the whole interface. If you don't want to
@@ -23,7 +24,13 @@ touch python, dump it as json:
      "winding": [...], "conf": [...]}
 
     python run_gauge.py --gt relative_windings.json \
-        --adapter json:yours.json --pitch-um 187.3 --um-per-vox 2.4
+        --adapter json:yours.json --pitch-um 180 --um-per-vox 2.4
+
+Matching tolerance is measured, not assumed: at each ground-truth point
+it is half the distance to the nearest annotated neighbor on an
+adjacent winding. No spacing constant, no umbilicus, no radial model.
+Sparse regions fall back to the tightest available estimate. Tighter
+costs coverage, never accuracy.
 
 Metrics, fixed before any measurement: exact agreement on dw=1 pairs,
 mean absolute residual, a confidence vs accuracy calibration curve, and
@@ -37,20 +44,26 @@ any external generator was measured:
 
     sha256 d4da5eb9f7e8ce4b2c372c19d9830b229218b8e2777ef3dfcc9a2332f0bcd064
 
-The matching rule, the metrics, the subjects and the verdict criteria
-for the open pitch question (225 vs 187 um) are all in there and cannot
-change now. Additions happen as dated addenda, never edits.
-
-First subjects: winding-sync (abundantjoe), BFS on the same graph as
-the baseline, and my own E1 estimator, scored held-out on pairs it
-never saw during development. No number about anyone's generator goes
-public before its author has seen it.
+That hash still verifies against the root commit. The matching rule,
+the metrics, the subjects and the verdict criteria for the open pitch
+question are all in there. Changes happen as dated addenda, never
+edits.
 
 ## Status
 
-Harness validated on synthetic ground truth with known answers and on
-the real Paris 4 annotations (reproduces the 706-pair z10000-11000
-window from the July concordance work exactly). First real scores
-pending author confirmation of the winding-sync entry point.
+The bench is open. run_gauge.py works today via the json adapter,
+self-tested on the full Paris 4 annotations (8156 pairs, M1 1.000).
+Mesh extraction validated on GP segment 20231022170901: 8 wraps,
+matching an independent count.
+
+Subjects so far: winding-sync (abundantjoe), BFS on the same graph as
+the baseline, E1 (mine, held out on pairs it never saw), angle-binned
+radial pitch (alyalya), constraint chain (Iyán Dopico). Every subject
+declares provenance against each GT arm; results are labeled
+independent / shared-parent / in-sample, and no number about a
+generator goes public before its author has seen it.
+
+Today's addenda came from review by Paul Henderson, sean (bruniss),
+Iyán Dopico and alyalya, before any subject was scored.
 
 MIT.
