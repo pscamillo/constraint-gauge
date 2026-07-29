@@ -201,5 +201,8 @@
   "claims": {
     "atlas_um": 187.3,
     "winding_sync_um": 225.0
-  }
+  },
+  "verdict_superseded_by": "A6.5 (scope): verdicts (a)-(d) do not apply",
+  "governing_verdict": "e",
+  "governing_verdict_note": "claims are medians over other scroll populations; one scroll cannot confirm or refute them"
 }

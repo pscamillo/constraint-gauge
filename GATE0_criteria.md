@@ -403,3 +403,60 @@ STILL OPEN. The arbitration of 6.2 needs the other side: what
 winding-sync assigns to Paris 4 specifically, run as subject S-A. Until
 that exists, no verdict on either claim. Under 6.4, both authors see
 their numbers before anything is published.
+
+### A6.3 — 2026-07-29 — direct mesh estimator, validity gates, and a
+frame erratum
+(RECORD-KEEPING NOTE: this text was written and committed in message
+form as ebb4abe but never landed in the file; it is appended here on
+discovery, out of numerical order and after A6.6. Nothing else was
+edited. From here on addenda are written in English: GATE0 is a public
+artefact and several of the people credited in it cannot read
+Portuguese. The sealed body stays verbatim and its hash d4da5eb9 still
+verifies against the root commit.)
+
+ERRATUM to A3.2. The claim "same frame, the volume z max 75784 fits
+both" is WRONG. The spiral-input annotations live in the 7.91 um
+volume (bbox x,y up to ~6600, z up to 17252; in the 2.4 um volume that
+region would be 11 mm across, implausible for 254 collections spanning
+several wraps), while the GP meshes live in the 2.4 um one. They are
+DIFFERENT FRAMES. Each arm is scored in its own frame with its own
+um-per-vox, and a generator supplies coordinates in the frame of the
+arm it is scored on. The first arbitration run used 2.4 um on the
+annotated arm and returned 46 um spacing, physically impossible, which
+is how the error surfaced.
+
+DIRECT ESTIMATOR (meshes). The grid samples each wrap densely along u
+(one grid step, 20 vox) compared with the gap between wraps (60-100
+vox), so the distance from a point on wrap k to the CURVE of wrap k+1
+at the same height v IS the perpendicular spacing, with second-order
+error step^2/(8 d^2), about 1.3%, always upward. No extrapolation and
+no axis. Validated on a synthetic spiral of KNOWN spacing (528 um):
+median 528.0 um, error 0.0%, q1-q3 spread 0.3 um. Where a direct
+estimator exists it decides; the A6.1 extrapolation is for sparse arms.
+
+VALIDITY GATES for the extrapolation, which A6.1 lacked. An
+extrapolated limit may support a verdict only if the fit explains the
+curve (r2 >= 0.9), the point estimate lies INSIDE its own bootstrap
+interval, and the curve has reached a plateau (last two densities
+within 10%). Failing any of these, the arm returns verdict (e).
+
+INVALIDATION OF THE FIRST RUN. It produced no valid verdict on either
+arm. Annotated: r2 0.557 and the wrong frame. Meshes: point estimate
+144.2 outside its own interval [211.1, 230.7] and a curve still falling
+steeply (960 -> 245 um, no plateau). The "(b)" printed by that run is
+an arithmetic artefact, NOT evidence for 225. None of those numbers
+were published.
+
+### A6.7 — 2026-07-29 — the published result files carry a verdict the
+document overrides
+results/arb_meshes.json, committed with A6.6, records
+verdict "a" with the note "187.3 (atlas) compatible, winding-sync not".
+That verdict is SUPERSEDED by A6.5: the runner applies section 6.2
+mechanically and does not know the scope argument, so it compared a
+one-scroll measurement against claims that are medians over other
+scroll populations. The governing verdict for the mesh arm is (e), on
+scope. The file is left in place rather than rewritten, with this
+addendum as the correction of record, and the runner will carry a scope
+field so the mismatch cannot recur.
+The measurement inside that file stands unchanged and is not affected:
+Paris 4 sheet spacing 180.0 um, 95% across meshes [173.6, 199.5].
