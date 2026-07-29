@@ -635,3 +635,29 @@ Order of measurement, for the record: the external subject was scored
 first, with a gate that protected it from an unfair number, and the
 author's own estimator second, with fidelity verified and its own
 weakness published.
+
+### A15 — 2026-07-29 — S-C: the BFS baseline, and what it says about
+A12
+The pre-registered role of S-C (section 1) is to separate solver from
+generator: the same graph, the same seeds, the same constraints, only
+the reconciliation differs. Run on the identical graph as
+winding-sync/l1@stride160, same slice z 57200, same mesh arm:
+  L1  (winding-sync)   M1 0.050 at dw=1, M2 21.5
+  BFS (villa baseline) M1 0.017 at dw=1, M2 25.5
+TWO CONCLUSIONS, and the first is favourable to the tool under test.
+First: the L1 formulation's advantage is REAL and shows up against
+human ground truth, not only in self-consistency. It recovers three
+times as many exact answers as the spanning-tree baseline on the same
+inputs and lowers the mean residual. The winding-sync README measures
+that gap internally (0.703 against 0.629 exact agreement, residual 0.51
+against 1.75); this is the external counterpart, on the arm the tool
+never saw.
+Second, and it re-reads A12: the ceiling is in the CONSTRAINTS, not in
+the solver. The better of the two solvers still reaches only 0.050,
+which means the graph handed to it does not carry the information the
+question needs on this slice. A12 reported the gap between internal and
+external agreement; S-C locates that gap upstream of the reconciliation
+step.
+Scope is unchanged from A12: one slice, one scroll, and Paris 4 is not
+among the 13 GP scrolls the tool targets. The stride is our variant per
+A11, applied identically to both solvers so the comparison is clean.

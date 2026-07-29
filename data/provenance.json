@@ -46,5 +46,11 @@
     "paris4-meshes": "independent",
     "pherc1218-stitched": "independent",
     "note": "OUR variant of abundantjoe/winding-sync v0.2.0: identical code and solver, TracingConfig.seed_stride_um lowered from 260 to 160 um. Not the author's configuration and not to be reported as winding-sync itself (A11)."
+  },
+  "winding-sync/bfs@stride160": {
+    "paris4-annotations": "independent",
+    "paris4-meshes": "independent",
+    "pherc1218-stitched": "independent",
+    "note": "BFS spanning-tree baseline (solve_bfs_tree) on the SAME graph as winding-sync/l1@stride160. Isolates solver from generator: identical seeds and constraints, only the reconciliation differs. Our stride variant per A11."
   }
 }
