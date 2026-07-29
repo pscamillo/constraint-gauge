@@ -1,0 +1,101 @@
+{
+  "n_pairs_gt": 40001,
+  "n_scorable": 3060,
+  "M4_coverage": 0.0764980875478113,
+  "n_dw1": 2035,
+  "M1_exact_dw1": 0.052088452088452086,
+  "M2_mae": 19.39738562091503,
+  "M3_bins": [
+    {
+      "bin": 0,
+      "n": 306,
+      "conf_mean": 1.089937933617168,
+      "acc": 0.032679738562091505
+    },
+    {
+      "bin": 1,
+      "n": 306,
+      "conf_mean": 1.5551858635168838,
+      "acc": 0.0392156862745098
+    },
+    {
+      "bin": 2,
+      "n": 306,
+      "conf_mean": 1.7887631601173115,
+      "acc": 0.05228758169934641
+    },
+    {
+      "bin": 3,
+      "n": 304,
+      "conf_mean": 2.0287763321968284,
+      "acc": 0.039473684210526314
+    },
+    {
+      "bin": 4,
+      "n": 306,
+      "conf_mean": 2.2488880959747273,
+      "acc": 0.05555555555555555
+    },
+    {
+      "bin": 5,
+      "n": 308,
+      "conf_mean": 2.4228348114177005,
+      "acc": 0.03571428571428571
+    },
+    {
+      "bin": 6,
+      "n": 304,
+      "conf_mean": 2.600888831589959,
+      "acc": 0.05592105263157895
+    },
+    {
+      "bin": 7,
+      "n": 308,
+      "conf_mean": 2.890131841087109,
+      "acc": 0.05844155844155844
+    },
+    {
+      "bin": 8,
+      "n": 306,
+      "conf_mean": 3.26265526134399,
+      "acc": 0.032679738562091505
+    },
+    {
+      "bin": 9,
+      "n": 306,
+      "conf_mean": 4.008170905711702,
+      "acc": 0.06862745098039216
+    }
+  ],
+  "M3_note": "confidence is an arbitrary monotone scale; the curve shows whether higher conf means higher accuracy, not absolute probabilities",
+  "adapter": "winding-sync/l1",
+  "planar_matching": true,
+  "density_gate": {
+    "node_gap_vox": 88.81441324469807,
+    "sheet_gap_vox": 75.0,
+    "ratio": 1.1841921765959744,
+    "limit": 1.0,
+    "scorable": false
+  },
+  "scorable": false,
+  "not_scorable_reason": "generator node gap exceeds sheet gap (A10); metrics below are not a statement about its accuracy",
+  "adapter_z": 57200.0,
+  "adapter_stats": {
+    "n_seeds": 26864,
+    "n_edges": 56126,
+    "level": 2,
+    "voxel_um": 9.6,
+    "z_full_res": 57200,
+    "z_level": 14300,
+    "tiled": false
+  },
+  "subject": "winding-sync/l1",
+  "gt_arm": "paris4-meshes",
+  "provenance": "independent",
+  "provenance_note": "abundantjoe/winding-sync; generated from CT via structure tensor, no human labels upstream",
+  "publishable_as_headline": true,
+  "tau_vox": 35.27593652120723,
+  "tau_mode": "median",
+  "pitch_um": 180.0,
+  "um_per_vox": 2.4
+}

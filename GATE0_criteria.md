@@ -505,3 +505,40 @@ most one winding.
 This is an actionable finding about a parameter, not a defect of the
 method, and it is invisible to any internal consistency measure. Under
 6.4 the author sees it before it goes anywhere.
+
+### A12 — 2026-07-29 — first scored subject: winding-sync on PHerc
+Paris 4, one slice, and the gap between internal and external agreement
+SCOPE, stated first because it bounds everything below. ONE slice
+(z 57200 full-res) of ONE scroll (PHerc Paris 4), at pyramid level 2.
+Paris 4 is not among the 13 Grand Prize scrolls the tool targets. These
+numbers are not a characterisation of winding-sync, and nothing here
+should be read as one.
+CONFIGURATIONS. Author default (TracingConfig.seed_stride_um = 260 um)
+is NOT SCORABLE on this slice by A10: node gap 82-89 vox against a
+75 vox sheet gap, ratio 1.09-1.18. Two variants of OURS, same code and
+solver with the stride lowered, pass the gate: 160 um gives node gap
+68 vox in the scored region, ratio 0.91; 120 um gives 21.5 vox over the
+whole slice. Variants are labelled winding-sync/l1@stride<N> and are
+not the author's configuration (A11).
+RESULT, at stride 160 um, mesh arm, planar matching, 7495 pairs at
+dw=1:
+  internal, by the tool's own consistency(): satisfied_exactly 0.670,
+  within_one 0.881, mean_abs_residual 0.611
+  external, against human-verified mesh GT: M1 0.050, M2 21.5
+The two measure different things and disagree completely. The tool's
+README says it in advance: "Internal consistency is not correctness. Do
+not optimise self-consistency." This is that sentence with numbers on
+both sides, from the same graph and the same slice.
+WHAT WAS RULED OUT before concluding. Sampling density: raising it from
+ratio 1.18 to 0.91 left M1 unchanged (0.052 to 0.050). Match quality:
+stratifying by match distance, pairs matched within 0-10 vox score 5.4%
+exact against 5.0% for pairs matched at 30-40 vox, so the tolerance is
+not what is losing the signal. Scale or offset: dw_pred on dw=1 pairs
+has median 1.0 but median absolute value 19, symmetric and wide, which
+is dispersion rather than a factor or a shift.
+CORROBORATION, independent of our scoring. The recovered field spans
+216 windings on this slice (BFS on the same graph spans 257), against
+roughly 70-90 wraps for this scroll by the winding atlas. A field that
+is internally coherent and globally inflated is consistent with what
+the external score reports.
+The author received these numbers by DM before this commit, per 6.4.

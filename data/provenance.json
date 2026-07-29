@@ -34,5 +34,17 @@
     "paris4-meshes": "independent",
     "pherc1218-stitched": "independent",
     "note": "angle-binned radial pitch, abundantjoe/winding-sync#1"
+  },
+  "winding-sync/l1@stride120": {
+    "paris4-annotations": "independent",
+    "paris4-meshes": "independent",
+    "pherc1218-stitched": "independent",
+    "note": "OUR variant of abundantjoe/winding-sync v0.2.0: identical code and solver, TracingConfig.seed_stride_um lowered from 260 to 120 um. Not the author's configuration and not to be reported as winding-sync itself (A11)."
+  },
+  "winding-sync/l1@stride160": {
+    "paris4-annotations": "independent",
+    "paris4-meshes": "independent",
+    "pherc1218-stitched": "independent",
+    "note": "OUR variant of abundantjoe/winding-sync v0.2.0: identical code and solver, TracingConfig.seed_stride_um lowered from 260 to 160 um. Not the author's configuration and not to be reported as winding-sync itself (A11)."
   }
 }
