@@ -370,3 +370,36 @@ human-verified GP segment meshes, direct point-to-curve estimator, no
 axis and no spacing constant, each mesh median an upper bound by about
 1.3%. Robustness: the five meshes needing no wrap-skip correction give
 the same 180.0 um median as all nine.
+
+### A6.6 — 2026-07-29 — Paris 4, like for like: the gauge against the
+atlas entry (partial; the winding-sync side is still missing)
+Sources, each from its author's published artefact.
+  atlas, PHerc Paris 4, pyramid level 1 after the 22 July errata:
+  182.4 um. Source: pscamillo/winding-ruler, results/
+  atlas_collection_v2.csv, commit f23ae5a, row PHercParis4, column
+  lambda_med_um. Quoted in that repo's README line 34.
+  gauge, PHerc Paris 4, nine human-verified GP segment meshes, direct
+  point-to-curve estimator (A6.3), wrap-skip corrected (A6.4):
+  180.0 um, 95% across meshes [173.6, 199.5].
+Agreement: +1.3%, the atlas entry inside the gauge interval.
+WHAT THIS IS NOT. The +1.3% figure is not a new finding: it is already
+published in the winding-ruler README (18 July), computed against a
+reference of about 180 um that was itself ANCHORED TO THE PARIS 4 HUMAN
+ANNOTATIONS — the same annotations that chose the atlas's gap-closing
+parameter. Claiming discovery here would be self-citation.
+WHAT IT IS. The gauge replaces that dependent reference with an
+independent one. The nine GP segment meshes were never an input to the
+atlas, at any stage, and the estimator needs no calibrated parameter,
+no axis and no spacing constant. The anchored number and the
+unanchored one land 1.3% apart. That is confirmation by substitution of
+reference, not by re-measuring the same source.
+STRENGTH AND WEAKNESS, stated together. Strong on independence: no
+shared input, no shared estimator family, no tuned parameter. Weak on
+precision: with nine meshes the interval spans 26 um, so 182.4 would
+fall inside it even if the atlas were several percent off. This
+confirms that the atlas entry is not grossly wrong on Paris 4; it does
+not certify it to better than about 15%.
+STILL OPEN. The arbitration of 6.2 needs the other side: what
+winding-sync assigns to Paris 4 specifically, run as subject S-A. Until
+that exists, no verdict on either claim. Under 6.4, both authors see
+their numbers before anything is published.

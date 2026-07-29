@@ -1,0 +1,205 @@
+{
+  "arm": "paris4-meshes",
+  "points": 289171,
+  "direct_estimator": {
+    "n": 1396958,
+    "median_um": 197.84456360167786,
+    "q1_um": 146.0938219503059,
+    "q3_um": 276.22953482950106,
+    "per_mesh": [
+      {
+        "mesh": "20230702185753",
+        "n_wraps": 2,
+        "n": 89327,
+        "median_um": 173.58037006126432,
+        "median_raw_um": 347.16074012252864,
+        "q1_um": 144.9277076047103,
+        "q3_um": 206.85750878746333,
+        "implied_dr_um": 222.9297716167419,
+        "ratio_raw": 0.642151447015754,
+        "wrap_skip_k": 2,
+        "ratio_corrected": 1.284302894031508,
+        "accepted": true
+      },
+      {
+        "mesh": "20230929220926",
+        "n_wraps": 2,
+        "n": 113594,
+        "median_um": 342.80543402122987,
+        "median_raw_um": 1371.2217360849195,
+        "q1_um": 266.3080603645126,
+        "q3_um": 427.27077989215,
+        "implied_dr_um": 330.08650211268997,
+        "ratio_raw": 0.24072437989142828,
+        "wrap_skip_k": 4,
+        "ratio_corrected": 0.9628975195657131,
+        "accepted": true
+      },
+      {
+        "mesh": "20231005123336",
+        "n_wraps": 4,
+        "n": 233527,
+        "median_um": 262.146405512213,
+        "median_raw_um": 524.292811024426,
+        "q1_um": 157.08830481608027,
+        "q3_um": 441.7256353023638,
+        "implied_dr_um": 230.7827834157817,
+        "ratio_raw": 0.4401791872080998,
+        "wrap_skip_k": 2,
+        "ratio_corrected": 0.8803583744161996,
+        "accepted": true
+      },
+      {
+        "mesh": "20231012184424",
+        "n_wraps": 4,
+        "n": 269653,
+        "median_um": 199.53969734987933,
+        "median_raw_um": 199.53969734987933,
+        "q1_um": 143.53730045216034,
+        "q3_um": 272.73955246535826,
+        "implied_dr_um": 244.26225616661114,
+        "ratio_raw": 1.2241286290933568,
+        "wrap_skip_k": 1,
+        "ratio_corrected": 1.2241286290933568,
+        "accepted": true
+      },
+      {
+        "mesh": "20231016151002",
+        "n_wraps": 4,
+        "n": 93642,
+        "median_um": 180.0429154763657,
+        "median_raw_um": 180.0429154763657,
+        "q1_um": 141.20469054010573,
+        "q3_um": 229.2011020675831,
+        "implied_dr_um": 187.370760365961,
+        "ratio_raw": 1.0407005455905163,
+        "wrap_skip_k": 1,
+        "ratio_corrected": 1.0407005455905163,
+        "accepted": true
+      },
+      {
+        "mesh": "20231022170901",
+        "n_wraps": 8,
+        "n": 262339,
+        "median_um": 189.16949953854626,
+        "median_raw_um": 189.16949953854626,
+        "q1_um": 146.11028255142043,
+        "q3_um": 244.6670356473293,
+        "implied_dr_um": 204.94842891170325,
+        "ratio_raw": 1.083411593368104,
+        "wrap_skip_k": 1,
+        "ratio_corrected": 1.083411593368104,
+        "accepted": true
+      },
+      {
+        "mesh": "20231031143852",
+        "n_wraps": 3,
+        "n": 119386,
+        "median_um": 175.23863736979746,
+        "median_raw_um": 350.4772747395949,
+        "q1_um": 144.33885711355498,
+        "q3_um": 210.10244227196273,
+        "implied_dr_um": 204.6270961678441,
+        "ratio_raw": 0.5838526800914048,
+        "wrap_skip_k": 2,
+        "ratio_corrected": 1.1677053601828096,
+        "accepted": true
+      },
+      {
+        "mesh": "20231106155351",
+        "n_wraps": 3,
+        "n": 141497,
+        "median_um": 170.67113151273102,
+        "median_raw_um": 170.67113151273102,
+        "q1_um": 126.7176913103124,
+        "q3_um": 232.58156425908552,
+        "implied_dr_um": 214.42051842777698,
+        "ratio_raw": 1.2563373578605619,
+        "wrap_skip_k": 1,
+        "ratio_corrected": 1.2563373578605619,
+        "accepted": true
+      },
+      {
+        "mesh": "20231221180251",
+        "n_wraps": 2,
+        "n": 73993,
+        "median_um": 177.2664462643492,
+        "median_raw_um": 177.2664462643492,
+        "q1_um": 136.6927832215852,
+        "q3_um": 233.5677413523003,
+        "implied_dr_um": 169.851751372137,
+        "ratio_raw": 0.9581720339722102,
+        "wrap_skip_k": 1,
+        "ratio_corrected": 0.9581720339722102,
+        "accepted": true
+      }
+    ],
+    "median_across_meshes_um": 180.0429154763657,
+    "ci95_across_meshes": [
+      173.58037006126432,
+      199.53969734987933
+    ],
+    "n_meshes_used": 9,
+    "rejected": []
+  },
+  "extrapolation_valid": false,
+  "extrapolation_issues": [
+    "point estimate 144.2 outside its own interval [211.1, 230.7]",
+    "curve has not reached a plateau: last two densities differ by 36%"
+  ],
+  "collections": 9,
+  "estimator": "nearest adjacent-winding, density-extrapolated (A6.1)",
+  "limit_um": 144.22695110900614,
+  "ci95_lo_um": 211.07041211125775,
+  "ci95_hi_um": 230.65737677164645,
+  "fit_r2": 0.9997391298457226,
+  "curve": [
+    {
+      "fraction": 0.05,
+      "points": 14458,
+      "n_est": 14458,
+      "median_um": 960.6663505329795,
+      "q1_um": 629.4682142988094,
+      "q3_um": 1351.470086280969
+    },
+    {
+      "fraction": 0.1,
+      "points": 28917,
+      "n_est": 28917,
+      "median_um": 687.1792830287637,
+      "q1_um": 474.013824400361,
+      "q3_um": 963.8794846660462
+    },
+    {
+      "fraction": 0.25,
+      "points": 72292,
+      "n_est": 72292,
+      "median_um": 457.6609517936801,
+      "q1_um": 318.6944748857493,
+      "q3_um": 607.7205467517656
+    },
+    {
+      "fraction": 0.5,
+      "points": 144585,
+      "n_est": 144585,
+      "median_um": 332.28884936119965,
+      "q1_um": 240.67315891853858,
+      "q3_um": 444.5895564161583
+    },
+    {
+      "fraction": 1.0,
+      "points": 289171,
+      "n_est": 289171,
+      "median_um": 244.89907493681395,
+      "q1_um": 191.43512883933084,
+      "q3_um": 301.63334095702044
+    }
+  ],
+  "allpairs_median_um": 23518.982382058755,
+  "verdict": "a",
+  "verdict_note": "187.3 (atlas) compatible, winding-sync not",
+  "claims": {
+    "atlas_um": 187.3,
+    "winding_sync_um": 225.0
+  }
+}

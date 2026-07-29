@@ -1,0 +1,64 @@
+{
+  "arm": "paris4-annotations",
+  "points": 2173,
+  "direct_estimator": null,
+  "extrapolation_valid": false,
+  "extrapolation_issues": [
+    "fit r2 0.823 < 0.9"
+  ],
+  "collections": 254,
+  "estimator": "nearest adjacent-winding, density-extrapolated (A6.1)",
+  "limit_um": 152.17599999725815,
+  "ci95_lo_um": 148.44005507915654,
+  "ci95_hi_um": 172.5971072961452,
+  "fit_r2": 0.5573663881043549,
+  "curve": [
+    {
+      "fraction": 0.05,
+      "points": 108,
+      "n_est": 12,
+      "median_um": 203.55578941902095,
+      "q1_um": 120.0133935546875,
+      "q3_um": 227.46437664885826
+    },
+    {
+      "fraction": 0.1,
+      "points": 217,
+      "n_est": 46,
+      "median_um": 152.89159788576154,
+      "q1_um": 115.08466067331513,
+      "q3_um": 215.08187092426664
+    },
+    {
+      "fraction": 0.25,
+      "points": 543,
+      "n_est": 202,
+      "median_um": 169.5672705493962,
+      "q1_um": 114.52447698910642,
+      "q3_um": 217.0038495390853
+    },
+    {
+      "fraction": 0.5,
+      "points": 1086,
+      "n_est": 730,
+      "median_um": 156.71259647967054,
+      "q1_um": 111.7403369140625,
+      "q3_um": 236.01469798357385
+    },
+    {
+      "fraction": 1.0,
+      "points": 2173,
+      "n_est": 2173,
+      "median_um": 145.1008296622391,
+      "q1_um": 106.4127065219272,
+      "q3_um": 198.03597283832954
+    }
+  ],
+  "allpairs_median_um": 167.90046031108386,
+  "verdict": "e",
+  "verdict_note": "extrapolation invalid: fit r2 0.823 < 0.9",
+  "claims": {
+    "atlas_um": 187.3,
+    "winding_sync_um": 225.0
+  }
+}
