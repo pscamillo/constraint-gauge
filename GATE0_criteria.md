@@ -1,324 +1,356 @@
-# GATE0 — Critérios pré-registrados: benchmark de calibração de geradores de winding constraints
+# GATE0 — Pre-registered criteria: a calibration benchmark for winding
+# constraint generators
 
-Projeto (nome de trabalho): constraint-gauge
-Autor: pscamillo
-Data do rascunho: 2026-07-27
-Data da revisão e selagem: 2026-07-28
-Status: FINAL PARA SELAGEM. Revisado pelo autor em 28/07 (τ mantido,
-hipótese de ablação mantida com direção, juiz da arbitragem mantido).
-Após selar: mudanças só por adendo datado, nunca edição.
+TRANSLATION NOTE. The text below is an English translation of the sealed
+body and of addenda A1 to A7, which were written in Portuguese. The
+sealed original is immutable in the repository history and its published
+hash still verifies:
+
+    git show 3ceed9f:GATE0_criteria.md | sha256sum
+    d4da5eb9f7e8ce4b2c372c19d9830b229218b8e2777ef3dfcc9a2332f0bcd064
+
+Where a translation and the sealed original diverge, the original
+governs. Nothing was softened, dropped or added in translation; addenda
+from A6.3 onward were written in English and are untouched.
+
+Project (working name): constraint-gauge
+Author: pscamillo
+Drafted: 2026-07-27
+Reviewed and sealed: 2026-07-28
+Status: FINAL FOR SEALING. Reviewed by the author on 28/07 (tau kept,
+ablation hypothesis kept with its direction, arbitration judge kept).
+After sealing: changes only by dated addendum, never by edit.
 
 ---
 
-## 0. Objetivo
+## 0. Purpose
 
-Medir a acurácia por-localização e a calibração de confiança de geradores
-automáticos de winding constraints contra ground truth humano, com critérios
-definidos antes de qualquer número ser produzido.
+To measure the per-location accuracy and the confidence calibration of
+automatic winding constraint generators against human ground truth, with
+criteria fixed before any number is produced.
 
-O benchmark mede; não propõe gerador novo. Resultado nulo ("nenhum gerador
-atual atinge o limiar X") é entregável válido.
+The benchmark measures; it does not propose a new generator. A null
+result ("no current generator reaches threshold X") is a valid
+deliverable.
 
-## 1. Sujeitos (fixados antes de rodar)
+## 1. Subjects (fixed before running)
 
-- S-A: abundantjoe/winding-sync (commit pinado no dia da primeira medição;
-  registrar hash aqui por adendo).
-- S-B: cadeia de constraints do IyanDopico/vesuvius-sheet-tools
-  (scripts/constraints, mesmo regime de pin).
-- S-C: baseline BFS (solve_bfs_tree do winding-sync, rodando no MESMO grafo
-  de S-A — isola solver de gerador).
+- S-A: abundantjoe/winding-sync (commit pinned on the day of the first
+  measurement; record the hash here by addendum).
+- S-B: the constraint chain from IyanDopico/vesuvius-sheet-tools
+  (scripts/constraints, same pinning regime).
+- S-C: BFS baseline (solve_bfs_tree from winding-sync, run on the SAME
+  graph as S-A, which isolates solver from generator).
 
-Sujeitos adicionais só por adendo. Nenhum sujeito é medido publicamente sem
-DM prévia ao autor (ver §7).
+Additional subjects only by addendum. No subject is measured publicly
+without a prior DM to its author (see section 7).
 
 ## 2. Ground truth
 
-- GT-1: pares anotados humanos do spiral-input PHercParis4
-  (HF snapshot a pinar; base dos 706 pares binados por radius pelo Iyán).
-- GT-2: pares dos labels stitched do PHerc1218 (9.054 pares; controle
-  plano-a-1,001 já publicado).
-- GT-3 (opcional, adendo): as 278 fiber line annotations novas do time
-  (HF buckets/scrollprize/datasets/tree/spiral/PHercParis4, upload 27/07)
-  — só entram se o formato permitir extração de pares com a mesma regra §3.
+- GT-1: human annotated pairs from the spiral-input PHercParis4 dataset
+  (HF snapshot to pin; the basis of the 706 radius-binned pairs by Iyán).
+- GT-2: pairs from the stitched labels of PHerc1218 (9054 pairs; the
+  flat-to-1.001 control already published).
+- GT-3 (optional, by addendum): the team's 278 new fiber line
+  annotations (HF buckets/scrollprize/datasets/tree/spiral/PHercParis4,
+  uploaded 27/07) — included only if the format allows pair extraction
+  under the same rule as section 3.
 
-Declaração de dependência (obrigatória em qualquer publicação):
-GT-1 e GT-2 NÃO são independentes do winding atlas para fins de pitch —
-o pitch 173 µm do 1218 tem o atlas como um dos três pés. Para acurácia de
-winding (Δw inteiro), a dependência não se aplica: os pares são anotação
-humana direta. Para a arbitragem de pitch (§6), a regra de independência
-é a do §6.3.
+Dependency declaration (mandatory in any publication): GT-1 and GT-2 are
+NOT independent of the winding atlas for pitch purposes — the 173 um
+pitch of 1218 has the atlas as one of its three legs. For winding
+accuracy (integer dw) the dependency does not apply: the pairs are
+direct human annotation. For the pitch arbitration (section 6) the
+independence rule is the one in 6.3.
 
-## 3. Regra de matching anotação↔seed (pré-registrada)
+## 3. Annotation-to-seed matching rule (pre-registered)
 
-3.1 Cada seed do gerador tem posição (z, y, x) em espaço de volume
-    (winding-sync emite seed_coords; Iyán idem via point collections).
-3.2 Um par anotado (P, Q, Δw_humano) é PONTUÁVEL para um gerador se
-    existem seeds s_P, s_Q com dist(P, s_P) ≤ τ e dist(Q, s_Q) ≤ τ.
-3.3 τ = 0,5 × pitch mediano do scroll, em voxels do nível medido.
-    Justificativa: acima de meio pitch, o seed pode estar na folha vizinha
-    e o match deixa de ser interpretável. τ é FIXO; não será ajustado
-    após ver resultados.
-3.4 Pares não pontuáveis contam em COBERTURA, não em acurácia. Não
-    penalizam nem creditam.
-3.5 Empate de vizinho mais próximo: menor distância euclidiana; empate
-    exato (improvável) → menor índice de seed. Determinístico.
-3.6 Sensibilidade a τ (τ/2 e 2τ) é reportada como diagnóstico, nunca
-    como métrica primária.
+3.1 Every generator seed has a position (z, y, x) in volume space
+    (winding-sync emits seed_coords; Iyán likewise via point
+    collections).
+3.2 An annotated pair (P, Q, dw_human) is SCORABLE for a generator if
+    there are seeds s_P, s_Q with dist(P, s_P) <= tau and
+    dist(Q, s_Q) <= tau.
+3.3 tau = 0.5 x the scroll's median pitch, in voxels of the measured
+    level. Rationale: beyond half a pitch the seed may sit on the
+    neighbouring sheet and the match stops being interpretable. tau is
+    FIXED; it will not be adjusted after seeing results.
+3.4 Non-scorable pairs count towards COVERAGE, not accuracy. They
+    neither penalise nor credit.
+3.5 Nearest-neighbour ties: smallest euclidean distance; exact tie
+    (unlikely) goes to the smaller seed index. Deterministic.
+3.6 Sensitivity to tau (tau/2 and 2tau) is reported as a diagnostic,
+    never as a primary metric.
 
-## 4. Métricas primárias (fixadas)
+## 4. Primary metrics (fixed)
 
-- M1: exact agreement por-localização em pares adjacentes (dw=1):
-      fração de pares pontuáveis com Δw_gerador == Δw_humano.
-- M2: residual absoluto médio |Δw_gerador − Δw_humano| sobre pares
-      pontuáveis (a métrica que melhor separou L1 de BFS em dado real:
-      0,51 vs 1,75, per README do winding-sync).
-- M3: curva de calibração — confiança declarada (weights) vs acurácia
-      empírica, em 10 bins de quantil; ECE reportado.
-- M4: cobertura — fração de pares GT pontuáveis.
+- M1: per-location exact agreement on adjacent pairs (dw=1): the
+      fraction of scorable pairs with dw_generator == dw_human.
+- M2: mean absolute residual |dw_generator - dw_human| over scorable
+      pairs (the metric that best separated L1 from BFS on real data:
+      0.51 vs 1.75, per the winding-sync README).
+- M3: calibration curve — declared confidence (weights) vs empirical
+      accuracy, in 10 quantile bins; ECE reported.
+- M4: coverage — the fraction of GT pairs that are scorable.
 
-Métricas secundárias/diagnósticas podem ser adicionadas por adendo, mas
-nunca promovidas a primárias após a primeira medição.
+Secondary or diagnostic metrics may be added by addendum, but never
+promoted to primary after the first measurement.
 
-## 5. Ablação pré-registrada: prior de spacing no S-A
+## 5. Pre-registered ablation: the spacing prior in S-A
 
-Rodar winding-sync com CORPUS_SPACING_UM = 225,0 (default dele) e 187,3
-(atlas v2), demais parâmetros idênticos. Reportar ΔM1, ΔM2, ΔM4.
-Hipótese registrada: prior menor melhora M1 em Paris 4. Direção e
-magnitude são resultado, não premissa — publicar qualquer que seja o sinal.
+Run winding-sync with CORPUS_SPACING_UM = 225.0 (his default) and 187.3
+(atlas v2), all other parameters identical. Report dM1, dM2, dM4.
+Registered hypothesis: the smaller prior improves M1 on Paris 4.
+Direction and magnitude are a result, not a premise — publish whichever
+way the sign falls.
 
-## 6. Arbitragem de pitch (187,3 vs 225)
+## 6. Pitch arbitration (187.3 vs 225)
 
-6.1 Pergunta: qual estimador de spacing concorda com o pitch implicado
-    pelos pares anotados (distância física entre pares Δw=1), nos mesmos
-    scrolls, mesma resolução declarada.
-6.2 Vereditos possíveis (escritos antes): (a) 187,3 compatível, 225 não;
-    (b) 225 compatível, 187,3 não; (c) ambos compatíveis em regimes
-    diferentes (ex.: dependência radial explica); (d) nenhum compatível;
-    (e) GT insuficiente para decidir. Todos publicáveis.
-6.3 Independência: o juiz é a distância física dos pares anotados
-    humanos, não qualquer estimador automático. O atlas NÃO participa
-    como evidência na arbitragem — só como uma das partes medidas.
-6.4 Enquadramento público: medição conjunta de dois métodos, nunca
-    correção de autor. Sem nome no veredito antes da DM do §7.
+6.1 Question: which spacing estimator agrees with the pitch implied by
+    the annotated pairs (the physical distance between dw=1 pairs), on
+    the same scrolls, at the same declared resolution.
+6.2 Possible verdicts (written beforehand): (a) 187.3 compatible, 225
+    not; (b) 225 compatible, 187.3 not; (c) both compatible in different
+    regimes (e.g. a radial dependency explains it); (d) neither
+    compatible; (e) ground truth insufficient to decide. All are
+    publishable.
+6.3 Independence: the judge is the physical distance of the human
+    annotated pairs, not any automatic estimator. The atlas does NOT
+    take part as evidence in the arbitration — only as one of the
+    measured parties.
+6.4 Public framing: a joint measurement of two methods, never a
+    correction of an author. No name in the verdict before the DM of
+    section 7.
 
-## 7. Conduta
+## 7. Conduct
 
-7.1 DM ao abundantjoe com a spec deste documento ANTES de qualquer run
-    público de S-A; idem resultados antes de post público. Mesma regra
-    para o Iyán em S-B (formalidade menor, parceria existente).
-7.2 Erratas afirmativas, nunca defensivas. Números públicos só derivados
-    por script de agregação a partir dos CSVs (regra do aggregate.py —
-    nenhum número digitado à mão em artefato público).
-7.3 Artefatos públicos em inglês, registro trivial (sem travessão,
-    sem tríades, uma pergunta por mensagem). Docs internos em português.
+7.1 DM to abundantjoe with this document's spec BEFORE any public run of
+    S-A; likewise results before any public post. Same rule for Iyán on
+    S-B (less formality, existing partnership).
+7.2 Affirmative errata, never defensive. Public figures derived only by
+    an aggregation script from the CSVs (the aggregate.py rule — no
+    hand-typed number in a public artefact).
+7.3 Public artefacts in English, plain register (no em dashes, no
+    parallel triads, one question per message). Internal docs in
+    Portuguese.
 
-## 8. Condições externas registradas
+## 8. Recorded external conditions
 
-- C1: RESOLVIDA. sean (bruniss) respondeu em DM, 27/07 21:16: o time
-  não tem eval automático de geradores e não está construindo um no
-  momento, e registrou que consideraria útil ("not that we dont think
-  it would be useful"). Sem duplicação; publicação desimpedida.
-- C2: pin de commits/snapshots de todos os sujeitos e GTs no dia da
-  primeira medição, por adendo com hashes.
+- C1: RESOLVED. sean (bruniss) replied by DM, 27/07 21:16: the team has
+  no automatic eval for generators and is not building one at the
+  moment, and recorded that it would consider one useful ("not that we
+  dont think it would be useful"). No duplication; publication
+  unimpeded.
+- C2: pin commits and snapshots of every subject and GT on the day of
+  the first measurement, by addendum with hashes.
 
-## 9. Selagem
+## 9. Sealing
 
-Após revisão: `sha256sum GATE0_criteria.md` registrado em local público
-(gist ou primeiro commit do repo) antes da primeira medição de S-A/S-B.
+After review: `sha256sum GATE0_criteria.md` recorded in a public place
+(a gist or the repository's first commit) before the first measurement
+of S-A/S-B.
 
 ---
 
-## ADENDOS (datados; o corpo acima permanece selado)
 
-### A1 — 2026-07-28 — Pins de sujeitos e GT (cumpre C2 parcial)
+## ADDENDA (dated; the sealed body above stays as sealed)
+
+### A1 — 2026-07-28 — subject and GT pins (partially satisfies C2)
 - S-A winding-sync: commit 25842b6 (abundantjoe/winding-sync).
-- GT-1 Paris 4 relative_windings.json: snapshot local validado em
-  28/07 (2173 pontos, 254 collections, 8156 pares dw 1-6; reproduz os
-  706 pares da janela z10000-11000 do trabalho de julho). Hash do
-  arquivo a registrar no primeiro run pontuado.
+- GT-1 Paris 4 relative_windings.json: local snapshot validated on
+  28/07 (2173 points, 254 collections, 8156 pairs at dw 1-6;
+  reproduces the 706 pairs of the z10000-11000 window from the July
+  work). File hash to be recorded at the first scored run.
 
-### A2 — 2026-07-28 — tau local (motivado por Paul Henderson, #general)
-Limitacao reconhecida do 3.3: tau derivado do pitch MEDIANO pode
-cruzar folha onde o empacotamento local aperta (espacamento varia ~4x
-dentro de um crop; binning radial do Paris 4 corre 136-259 um).
-Mitigacoes ja em vigor: pares sem match custam cobertura e nunca
-acuracia (3.4); o CSV por-par grava as duas distancias de match, entao
-matches em regiao apertada sao auditaveis.
-Correcao adotada: tau LOCAL derivado do espacamento local (raio-
-dependente no Paris 4 via o binning radial ja medido; regra geral a
-especificar em A2.1 antes do primeiro numero publico). O tau mediano
-do 3.3 permanece como fallback onde nao ha medida local. Nenhum numero
-publico sai antes de A2.1 estar commitado.
+### A2 — 2026-07-28 — local tau (prompted by Paul Henderson, #general)
+Acknowledged limitation of 3.3: a tau derived from the MEDIAN pitch can
+cross a sheet where local packing is tight (spacing varies about 4x
+within one crop; the radial binning of Paris 4 runs 136-259 um).
+Mitigations already in force: unmatched pairs cost coverage and never
+accuracy (3.4); the per-pair CSV records both match distances, so
+matches in tight regions are auditable.
+Adopted fix: a LOCAL tau derived from the local spacing (radius-
+dependent on Paris 4 via the radial binning already measured; the
+general rule to be specified in A2.1 before any public number). The
+median tau of 3.3 remains as a fallback where no local measurement
+exists. No public number is released before A2.1 is committed.
 
-### A3 — 2026-07-28 — meshes GP como fonte de GT prioritaria
-(motivado por sean/bruniss, Paul Henderson e djosey, #general)
-GT-3 promovida: segmentos GP verificados por humanos do Paris 4 (lista
-do sean, com overlap de wrap na emenda a descontar) e o tifxyz merged
-do PHerc1667 (djosey; sem overlap). GT densa de superficie carrega
-continuidade de folha que pontos esparsos nao tem, e viabiliza tau
-apertado. As point collections (GT-1/GT-2) permanecem validas; a
-extracao de pares das meshes sera especificada em A3.1 com a regra de
-overlap explicita.
+### A3 — 2026-07-28 — GP meshes as a priority GT source
+(prompted by sean/bruniss, Paul Henderson and djosey, #general)
+GT-3 promoted: human-verified GP segments of Paris 4 (sean's list, with
+the wrap overlap at the seam to be discounted) and the merged tifxyz of
+PHerc1667 (djosey; no overlap). Dense surface GT carries sheet
+continuity that sparse points do not, and makes a tight tau affordable.
+The point collections (GT-1/GT-2) remain valid; pair extraction from
+the meshes will be specified in A3.1 with the overlap rule explicit.
 
-### A4 — 2026-07-28 — sujeitos adicionais
-- S-D: estimador E1 do winding-ruler (autor deste benchmark).
-  Reportado em duas linhas: in-sample (706 pares z10000-11000, usados
-  no desenvolvimento) e held-out (todos os demais pares, nunca vistos).
-  So a linha held-out e comparavel aos outros sujeitos.
-- S-E: variante angle-binned radial pitch de alyalya
-  (abundantjoe/winding-sync#1), a convite aceito em #general.
+### A4 — 2026-07-28 — additional subjects
+- S-D: the E1 estimator from winding-ruler (author of this benchmark).
+  Reported on two lines: in-sample (706 pairs at z10000-11000, used in
+  development) and held-out (all other pairs, never seen). Only the
+  held-out line is comparable with the other subjects.
+- S-E: alyalya's angle-binned radial pitch variant
+  (abundantjoe/winding-sync#1), by an invitation accepted in #general.
 
-### A5 — 2026-07-28 — parametros operacionais do primeiro run Paris 4
-pitch-um 180 (ancora humana; apenas tolerancia de matching, nao
-evidencia), um-per-vox 2.4. Registrado que qualquer valor em 175-190
-da os mesmos vereditos via o diagnostico tau/2-2tau do 3.6.
+### A5 — 2026-07-28 — operational parameters of the first Paris 4 run
+pitch-um 180 (human anchor; matching tolerance only, not evidence),
+um-per-vox 2.4. Recorded that any value in 175-190 gives the same
+verdicts via the tau/2-2tau diagnostic of 3.6.
 
-### A6 — 2026-07-28 — confianca por par (decisao de implementacao)
-conf_par = min(conf_a, conf_b): o par vale o que vale sua ponta mais
-fraca. Fixado antes de qualquer medicao de sujeito externo.
+### A6 — 2026-07-28 — pair confidence (implementation decision)
+conf_pair = min(conf_a, conf_b): a pair is worth what its weaker
+endpoint is worth. Fixed before any measurement of an external subject.
 
-### A2.1 — 2026-07-28 — regra do tau local (implementa A2)
-tau(p) = 0.5 x pitch_local(r(p)); r = distancia in-plane ao eixo do
-scroll (config por scroll ou mediana (x,y) do GT); pitch_local por
-lookup em tabela radial MEDIDA por scroll (data/paris4_pitch_table.json
-para o Paris 4, do binning dos pares humanos de julho, 136-259 um).
-Extrapolacao pelo bin mais proximo nas duas pontas da tabela — abaixo
-do bin interno a mediana seria mais frouxa que o pitch local, que e o
-exato risco de cruzar folha; a mediana do 3.3 so se aplica sem tabela.
-Demonstrado em tests/test_localtau.py: tau mediano envenenado por
-matches cruzando folha (M1 0.840), tau local limpo (M1 1.000) ao custo
-de cobertura (0.830 -> 0.757). Numeros publicos desbloqueados.
+### A2.1 — 2026-07-28 — the local tau rule (implements A2)
+tau(p) = 0.5 x pitch_local(r(p)); r = in-plane distance to the scroll
+axis (per-scroll config or the median (x, y) of the GT); pitch_local by
+lookup in a MEASURED per-scroll radial table
+(data/paris4_pitch_table.json for Paris 4, from the July binning of the
+human pairs, 136-259 um). Nearest-bin extrapolation at both ends of the
+table — below the innermost bin the median would be looser than the
+local pitch, which is exactly the cross-sheet hazard; the median of 3.3
+applies only where there is no table.
+Demonstrated in tests/test_localtau.py: median tau poisoned by
+cross-sheet matches (M1 0.840), local tau clean (M1 1.000) at the cost
+of coverage (0.830 -> 0.757). Public numbers unblocked.
 
-### A2.2 — 2026-07-28 — tau das anotacoes (motivado por sean/bruniss e
-Paul Henderson, #general; substitui A2.1 como regra primaria)
-Critica aceita: espacamento winding-a-winding nao e uma constante com
-significado, e raio ao umbilicus nao correlaciona com winding sob
-deformacao (o crop do Paul demonstra variacao drastica em curta
-distancia). Regra nova, sem geometria: tau(p) = 0.5 x distancia ao
-ponto anotado mais proximo em winding adjacente na MESMA collection —
-medido no ponto, sem constante, sem eixo, sem modelo radial. Cadeia de
-fallback onde a anotacao e esparsa: min(tau_anotacao, tau_tabela A2.1,
-tau_mediano 3.3) — o mais apertado vence; apertado custa cobertura,
-nunca acuracia. Demonstrado em tests/test_gt_tau.py: definido em 100%
-dos pontos do sintetico, M1 1.000 sem geometria alguma. A tabela
-radial do A2.1 fica rebaixada a fallback.
+### A2.2 — 2026-07-28 — tau from the annotations (prompted by
+sean/bruniss and Paul Henderson, #general; supersedes A2.1 as the
+primary rule)
+Criticism accepted: winding-to-winding spacing is not a meaningful
+constant, and radius to the umbilicus does not correlate with winding
+under deformation (Paul's crop shows drastic variation over a short
+distance). New rule, with no geometry: tau(p) = 0.5 x the distance to
+the nearest annotated point on an adjacent winding in the SAME
+collection — measured at the point, no constant, no axis, no radial
+model. Fallback chain where annotation is sparse: min(tau_annotation,
+tau_table A2.1, tau_median 3.3) — the tightest wins; tighter costs
+coverage, never accuracy. Demonstrated in tests/test_gt_tau.py: defined
+on 100% of the synthetic points, M1 1.000 with no geometry at all. The
+radial table of A2.1 is demoted to a fallback.
 
-### A3.1 — 2026-07-28 — extracao de GT das meshes verificadas
-(implementa A3; regra sem geometria, coerente com A2.2)
-Fonte: segmentos GP verificados por humanos, formato tifxyz, na
-variante registrada no mesmo volume das anotacoes quando existir
+### A3.1 — 2026-07-28 — GT extraction from the verified meshes
+(implements A3; a rule with no geometry, consistent with A2.2)
+Source: human-verified GP segments, tifxyz format, in the variant
+registered on the same volume as the annotations where one exists
 (PHercParis4/segments/<id>/mesh/<id>-on-<volume>-<um>.tifxyz).
-Atribuicao de winding SEM eixo e SEM constante: ao longo da linha media
-do eixo de arco, cadeia de auto-proximidade — o proximo no e o ponto
-3D mais proximo entre os que ja deram a volta (corda < 0.5 x arco,
-criterio adimensional); winding(u) = indice do intervalo da cadeia. A
-malha conta as proprias voltas.
-Overlap (aviso do sean): cada mesh e uma collection isolada, pares
-entre meshes nao existem; primeira e ultima volta descartadas por
-padrao (trim=1). O tifxyz merged do 1667 (djosey) roda com trim=0.
-Frames: cada braco de GT pontua no frame do volume em que a mesh esta
-registrada; nao se comparam frames diferentes.
-Validado em 20231022170901 (Paris 4): 8 voltas detectadas, batendo a
-contagem independente de alyalya em #general; arcos por volta
-monotonicos 16511 -> 12264 vox; 41755 pontos pos-trim, ~19x a
-densidade do braco de anotacoes.
+Winding assignment with NO axis and NO constant: along the mid row of
+the arc axis, a self-proximity chain — the next node is the nearest 3D
+point among those that have already wrapped (chord < 0.5 x arc, a
+dimensionless criterion); winding(u) = the index of the chain interval.
+The mesh counts its own wraps.
+Overlap (sean's warning): each mesh is its own collection, cross-mesh
+pairs do not exist; the first and last wraps are discarded by default
+(trim=1). The merged 1667 tifxyz (djosey) runs with trim=0.
+Frames: each GT arm is scored in the frame of the volume the mesh is
+registered on; different frames are not compared.
+Validated on 20231022170901 (Paris 4): 8 wraps detected, matching
+alyalya's independent count in #general; arcs per wrap monotone
+16511 -> 12264 vox; 41755 points after trim, about 19x the density of
+the annotation arm.
 
-### A7 — 2026-07-28 — proveniencia sujeito-GT (motivado por Iyán Dopico,
-que a declarou contra o proprio interesse; texto aprovado por ele antes
-do commit)
-S-F: cadeia de constraints do IyanDopico/vesuvius-sheet-tools. A cadeia
-descende dos mesmos stitched labels que formam o GT-2 (1218): sujeito e
-regua compartilham parent nesse braco. Regra geral adotada: TODO sujeito
-declara proveniencia contra CADA braco de GT antes de ser pontuado, e
-todo resultado publicado sai rotulado independent / shared-parent /
-in-sample. Para S-F: Paris 4 = teste independente; 1218 = reportado com
-asterisco shared-parent. Para S-D (E1, do autor deste benchmark): janela
-z10000-11000 = in-sample; demais pares = independent. Nenhuma linha
-shared-parent ou in-sample e comparavel entre sujeitos sem o rotulo.
+### A7 — 2026-07-28 — subject-vs-GT provenance (prompted by Iyán
+Dopico, who declared it against his own interest; text approved by him
+before the commit)
+S-F: the constraint chain from IyanDopico/vesuvius-sheet-tools. The
+chain descends from the same stitched labels that form GT-2 (1218):
+subject and ruler share a parent on that arm. General rule adopted:
+EVERY subject declares provenance against EACH GT arm before being
+scored, and every published result is labelled independent /
+shared-parent / in-sample. For S-F: Paris 4 = independent test; 1218 =
+reported with a shared-parent asterisk. For S-D (E1, by the author of
+this benchmark): the z10000-11000 window = in-sample; all other pairs =
+independent. No shared-parent or in-sample line is comparable across
+subjects without its label.
 
-### A3.2 — 2026-07-29 — cruzamento por profundidade + consenso de linhas
-(substitui o detector de cadeia do A3.1; motivado por falha em mesh real)
-Regra: um retorno de volta e o primeiro trecho contiguo onde
-corda <= 5 x (menor corda a frente) E corda < 0.5 x arco; o no e o
-argmin da corda nesse trecho. A menor corda a frente E uma medicao do
-espacamento local entre folhas, entao ambos os criterios sao
-adimensionais e auto-derivados: sem eixo, sem constante de pitch.
-Consenso: a cadeia roda em 5 linhas bem cobertas do grid; a contagem
-modal vence e a melhor linha modal da as fronteiras. Uma dobra que
-engana uma linha nao engana cinco alturas.
-Resultado nas 10 meshes GP do Paris 4: 10/10 extraem, arcos monotonicos
-em todas; a mesh que falhava (20231005123336) sai de 1 volta espuria de
-93k vox para 4 voltas de ~23k (4 x 23.3k = arco total, ao voxel).
-Quatro meshes contam 1 volta a menos que a leitura de linha unica:
-direcao conservadora — subcontar perde cobertura, nunca corrompe
-rotulos, pois as voltas mantidas sao internamente consistentes.
-Bracos totais: 271864 pontos de mesh + 2173 anotados, mesmo frame
-(volume 20260411134726, z max 75784 comporta ambos).
+### A3.2 — 2026-07-29 — wrap crossing by return depth, five-row consensus
+(supersedes the chain detector of A3.1; prompted by a failure on a real
+mesh)
+Rule: a wrap return is the first contiguous run where
+chord <= 5 x (smallest chord ahead) AND chord < 0.5 x arc; the node is
+the argmin of the chord in that run. The smallest chord ahead IS a
+measurement of the local sheet spacing, so both criteria are
+dimensionless and self-derived: no axis, no pitch constant.
+Consensus: the chain runs on 5 well-covered grid rows; the modal count
+wins and the best modal row gives the boundaries. A fold that fools one
+row does not fool five heights.
+Result on the 10 GP meshes of Paris 4: 10/10 extract, arcs monotone in
+all of them; the mesh that failed (20231005123336) goes from 1 spurious
+wrap of 93k vox to 4 wraps of about 23k (4 x 23.3k = the total arc, to
+the voxel). Four meshes count one wrap fewer than the single-row read:
+the conservative direction — undercounting loses coverage and never
+corrupts labels, since the wraps kept are internally consistent.
+Arm totals: 271864 mesh points plus 2173 annotated, same frame
+(volume 20260411134726, z max 75784 fits both).
+[Superseded in part by A6.3: the two arms are NOT in the same frame.]
 
-### A7.1 — 2026-07-29 — proveniencia no codigo (implementa A7)
-Registro em data/provenance.json: por sujeito, um rotulo por braco de
-GT (independent / shared-parent / in-sample) mais nota de justificativa.
-O runner carimba cada summary com subject, gt_arm, provenance e
-publishable_as_headline; sujeito ou braco nao declarado sai UNDECLARED
-com aviso. O bloqueio e social, nao tecnico: linha sem rotulo nao se
-publica. Declarado hoje: winding-sync/l1 e /bfs (independent nos tres
-bracos), E1 (in-sample no braco anotado; E1/held-out independent),
-cadeia do Iyan (shared-parent no 1218, independent no Paris 4, por
-declaracao do autor), variante angle-binned da alyalya (independent).
+### A7.1 — 2026-07-29 — provenance in the code (implements A7)
+Registry in data/provenance.json: per subject, one label per GT arm
+(independent / shared-parent / in-sample) plus a justification note.
+The runner stamps every summary with subject, gt_arm, provenance and
+publishable_as_headline; an undeclared subject or arm comes out
+UNDECLARED with a warning. The block is social, not technical: an
+unlabelled line is not published. Declared today: winding-sync/l1 and
+/bfs (independent on all three arms), E1 (in-sample on the annotated
+arm; E1/held-out independent), Iyán's chain (shared-parent on 1218,
+independent on Paris 4, by the author's own declaration), alyalya's
+angle-binned variant (independent).
 
-### A3.3 — 2026-07-29 — trim adaptativo e collection de winding unico
-O trim de emenda (A3.1) so se aplica quando sobram >= 2 windings; caso
-contrario roda sem trim. Collection que ainda assim fica com um unico
-winding e DESCARTADA: sem winding vizinho nao ha par dw>=1 nem tau
-medido, entao carregar esses pontos so os exporia ao fallback frouxo.
-Efeito nas 10 meshes do Paris 4: 20231031143852 e 20231106155351
-recuperadas com trim=0 (3 windings cada, +22853 pontos), 20231210121321
-descartada (1 volta). Braco final: 9 meshes, 289171 pontos, tau A2.2
-medido em 100% deles, faixa 3.4-37.5 vox. O fallback mediano deixa de
-ser usado no braco de meshes.
+### A3.3 — 2026-07-29 — adaptive trim and single-winding collections
+The seam trim (A3.1) applies only when at least 2 windings survive it;
+otherwise the extraction runs untrimmed. A collection that still ends
+up with a single winding is DISCARDED: with no neighbouring winding
+there is no dw>=1 pair and no measured tau, so carrying those points
+would only expose them to the loose fallback.
+Effect on the 10 Paris 4 meshes: 20231031143852 and 20231106155351
+recovered with trim=0 (3 windings each, +22853 points), 20231210121321
+discarded (1 wrap). Final arm: 9 meshes, 289171 points, A2.2 tau
+measured on 100% of them, range 3.4-37.5 vox. The median fallback is no
+longer used anywhere in the mesh arm.
 
-### A8 — 2026-07-29 — escala (correcao de implementacao, sem efeito em regra)
-build_pairs passa a contar pares por histograma de windings e amostrar
-por bloco: memoria O(max_pairs), nao O(todos os pares). Vizinho mais
-proximo (matcher e tau A2.2) passa a usar KD-tree com fallback para
-forca bruta em blocos. Nenhum criterio mudou; o mesmo self-test que
-consumia 31 GB e nao terminava agora roda em 2.4 s com 775 MB.
+### A8 — 2026-07-29 — scale (implementation fix, no effect on any rule)
+build_pairs now counts pairs from a winding histogram and samples per
+block: memory O(max_pairs), not O(all pairs). Nearest-neighbour
+searches (the matcher and the A2.2 tau) now use a KD-tree with a
+chunked brute-force fallback. No criterion changed; the same self-test
+that consumed 31 GB and did not finish now runs in 2.4 s with 775 MB.
 
-### A6.1 — 2026-07-29 — estimador e curva de convergencia da arbitragem
-(registra o metodo ANTES de qualquer medicao real; o veredito continua
-sendo o do 6.2)
-Dois estimadores reportados lado a lado. NEAREST: distancia de cada
-ponto anotado ao vizinho mais proximo em winding adjacente, mediana
-sobre pontos — e exatamente 2x a tolerancia A2.2, isto e, a grandeza
-contra a qual um gerador realmente compete. E um LIMITE SUPERIOR do
-espacamento perpendicular: dois pontos anotados raramente estao
-perpendiculares atraves do vao. ALLPAIRS: mediana sobre todos os pares
-dw=1, leitura literal do 6.1, reportada como teto.
-Curva de convergencia: o vies do nearest encolhe com a densidade de
-amostragem. Amostrando o mesmo braco em varias densidades traca-se uma
-curva decrescente cujo limite e o espacamento fisico. Lei de
-convergencia derivada da geometria: o parceiro mais proximo esta a
-sqrt(d^2 + r^2) com r^2 ~ A/n, entao mediana^2 = d^2 + b/n, e o
-intercepto do ajuste linear de mediana^2 contra 1/n da d^2. Intervalo
-por bootstrap sobre os pontos de GT (curva refeita em cada replica).
-Validado em tests/test_pitch.py contra folhas sinteticas de espacamento
-CONHECIDO (180 um): estimador nunca subestima, decresce com densidade,
-limite extrapolado 181.9 um (erro 1.1%, r2 0.999), allpairs 4971 um
-confirmando que e teto e nao competidor. Registro de erro: o primeiro
-modelo tentado (linear em n^-1/2) subestimava 16% e foi rejeitado pelo
-proprio teste sintetico antes de qualquer contato com dado real.
+### A6.1 — 2026-07-29 — the arbitration's estimator and convergence curve
+(records the method BEFORE any real measurement; the verdict remains
+the one in 6.2)
+Two estimators reported side by side. NEAREST: the distance from each
+annotated point to its nearest neighbour on an adjacent winding, median
+over points — exactly 2x the A2.2 tolerance, that is, the quantity a
+generator actually competes against. It is an UPPER BOUND on the
+perpendicular spacing: two annotated points are rarely perpendicular
+across the gap. ALLPAIRS: the median over all dw=1 pairs, the literal
+reading of 6.1, reported as a ceiling.
+Convergence curve: the nearest estimator's bias shrinks with sampling
+density. Sampling the same arm at several densities traces a decreasing
+curve whose limit is the physical spacing. Convergence law derived from
+the geometry: the nearest partner sits at sqrt(d^2 + r^2) with
+r^2 ~ A/n, so median^2 = d^2 + b/n, and the intercept of a linear fit
+of median^2 against 1/n gives d^2. Interval by bootstrap over the GT
+points (the curve is rebuilt on each replicate).
+Validated in tests/test_pitch.py against synthetic sheets of KNOWN
+spacing (180 um): the estimator never underestimates, decreases with
+density, extrapolated limit 181.9 um (error 1.1%, r2 0.999), allpairs
+4971 um confirming it is a ceiling and not a competitor. Error on
+record: the first model tried (linear in n^-1/2) underestimated by 16%
+and was rejected by the synthetic test itself, before any contact with
+real data.
 
-### A6.2 — 2026-07-29 — papeis dos dois bracos na arbitragem
-(registrado ANTES de qualquer medicao real)
-Braco de MESHES (A3.1/A3.3) e o ARBITRO: nem o atlas (187.3) nem o
-winding-sync (225) usaram os segmentos GP verificados como insumo.
-Braco ANOTADO tem DEPENDENCIA DECLARADA com o 187.3: o atlas deste
-autor foi calibrado contra anotacoes humanas do Paris 4, entao ele
-partilha insumo com esse claim, ainda que grandeza e metodo sejam
-outros. Consequencia fixada antes do numero: uma confirmacao do 187.3
-que venha apenas do braco anotado NAO conta como confirmacao. Um
-veredito contra qualquer dos dois claims vale nos dois bracos. Regra
-6.4 aplica-se igualmente ao 225 e ao 187.3: cada autor ve antes.
+### A6.2 — 2026-07-29 — the roles of the two arms in the arbitration
+(recorded BEFORE any real measurement)
+The MESH arm (A3.1/A3.3) is the ARBITER: neither the atlas (187.3) nor
+winding-sync (225) used the verified GP segments as input. The
+ANNOTATED arm has a DECLARED DEPENDENCY with the 187.3: this author's
+atlas was calibrated against Paris 4 human annotations, so it shares
+input with that claim, even though the quantity and the method differ.
+Consequence fixed before the number: a confirmation of 187.3 coming
+only from the annotated arm does NOT count as confirmation. A verdict
+against either claim counts on both arms. Rule 6.4 applies equally to
+the 225 and to the 187.3: each author sees it first.
 
 ### A6.4 — 2026-07-29 — wrap-skip correction, and the invalidation of
 the run that preceded it
