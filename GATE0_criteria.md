@@ -319,3 +319,30 @@ outros. Consequencia fixada antes do numero: uma confirmacao do 187.3
 que venha apenas do braco anotado NAO conta como confirmacao. Um
 veredito contra qualquer dos dois claims vale nos dois bracos. Regra
 6.4 aplica-se igualmente ao 225 e ao 187.3: cada autor ve antes.
+
+### A6.4 — 2026-07-29 — wrap-skip correction, and the invalidation of
+the run that preceded it
+INVALIDATION. The 12:xx mesh run printed verdict (a), favouring this
+author's own 187.3, and it does not count. The exclusion threshold that
+produced it (implied/measured < 0.8) was chosen AFTER seeing the table
+of ratios, and the choice decides the verdict: the median over all nine
+meshes is 248.9 um, compatible with 225; over the five survivors it is
+180.0 um, compatible with 187.3. A post-hoc criterion that moves the
+answer to the author's own claim is exactly the degree of freedom
+pre-registration exists to remove. Not published, not counted.
+RULE, stated by principle rather than fitted. A spiral whose arc per
+wrap shrinks by dA implies radial growth dA/2pi per wrap; comparing
+that with the measured gap gives ratio = implied/measured. If the chain
+merged k wraps into one, the measured gap is k times the true spacing
+and the ratio lands near 1/k. So: k = round(1/ratio) applied when
+k >= 2, and the mesh is ACCEPTED only if the corrected ratio falls in
+[0.75, 1.6], the band that unskipped meshes occupy on geometric
+grounds (measured slightly below implied because scrolls are not
+circular). The correction predicts its own factor before that factor is
+known, so it is falsifiable: a mesh whose CORRECTED ratio still misses
+the band is rejected, not rescaled again.
+The bootstrap resamples MESHES, not points: adjacent grid cells measure
+nearly the same gap, and point-level resampling gave a spurious 0.7 um
+interval.
+Verdicts from the next run under this rule count, whichever way they
+fall.

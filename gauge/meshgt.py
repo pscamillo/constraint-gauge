@@ -214,10 +214,17 @@ def mesh_spacing_um(mesh_dir, um_per_vox, stride_v=4, stride_u=4,
     vref, (cols, chain, _) = max(cands, key=lambda t: len(t[1][0]))
     if modal < 2:
         return np.empty(0), {"n_wraps": modal, "n": 0}
+    row_ref = np.column_stack([x[vref, cols], y[vref, cols],
+                               z[vref, cols]])
+    s_ref = np.concatenate([[0.0], np.cumsum(
+        np.linalg.norm(np.diff(row_ref, axis=0), axis=1))])
 
     bounds_u = cols[chain]
+    # with only two wraps there is no interior pair to keep: measure the
+    # single available gap rather than reporting nothing (A6.4)
+    t = trim_wraps if modal - 2 * trim_wraps >= 2 else 0
     out = []
-    for k in range(trim_wraps, modal - 1 - trim_wraps + 1):
+    for k in range(t, modal - 1 - t + 1):
         ua0, ua1 = bounds_u[k], bounds_u[k + 1]
         ub0, ub1 = bounds_u[k + 1], bounds_u[min(k + 2, modal)]
         if ub1 <= ub0:
@@ -243,7 +250,41 @@ def mesh_spacing_um(mesh_dir, um_per_vox, stride_v=4, stride_u=4,
     if not out or not len(np.concatenate(out)):
         return np.empty(0), {"n_wraps": modal, "n": 0}
     d = np.concatenate(out) * um_per_vox
-    return d, {"n_wraps": modal, "n": int(len(d)),
-               "median_um": float(np.median(d)),
-               "q1_um": float(np.percentile(d, 25)),
-               "q3_um": float(np.percentile(d, 75))}
+    # independent cross-check: a spiral whose arc per wrap shrinks by
+    # dA implies a radial growth of dA / 2pi per wrap. Comparing that
+    # with the measured spacing catches wrap-skips, where the chain
+    # called two wraps one and the measured gap doubles (A6.4).
+    arcs = np.diff(s_ref[np.asarray(chain)]) if len(chain) > 1 \
+        else np.empty(0)
+    implied = float("nan")
+    if len(arcs) >= 2:
+        slope = float(np.median(np.diff(arcs)))
+        implied = abs(slope) / (2.0 * np.pi) * um_per_vox
+    med_raw = float(np.median(d))
+    ratio = implied / med_raw if med_raw > 0 and np.isfinite(implied) \
+        else float("nan")
+
+    # Wrap-skip correction (A6.4). If the chain merged k wraps into one,
+    # the measured gap is k times the true spacing, so implied/measured
+    # lands near 1/k. The rule is stated by principle, not fitted to the
+    # data: k = round(1/ratio), applied when k >= 2, and the mesh is
+    # accepted only if the corrected ratio falls in the same band the
+    # unskipped meshes occupy [0.75, 1.6]. Correction predicts the
+    # factor before it is known, so it is falsifiable: a mesh whose
+    # corrected ratio still misses the band is EXCLUDED, not rescaled.
+    k = 1
+    if np.isfinite(ratio) and ratio > 0:
+        k = max(1, int(round(1.0 / ratio)))
+    med = med_raw / k if k > 1 else med_raw
+    ratio_corr = implied / med if med > 0 and np.isfinite(implied) \
+        else float("nan")
+    accepted = bool(np.isfinite(ratio_corr) and 0.75 <= ratio_corr <= 1.6)
+    return d / (k if k > 1 else 1), {
+        "n_wraps": modal, "n": int(len(d)),
+        "median_um": med, "median_raw_um": med_raw,
+        "q1_um": float(np.percentile(d, 25)) / (k if k > 1 else 1),
+        "q3_um": float(np.percentile(d, 75)) / (k if k > 1 else 1),
+        "implied_dr_um": implied,
+        "ratio_raw": ratio, "wrap_skip_k": int(k),
+        "ratio_corrected": ratio_corr,
+        "accepted": accepted}
