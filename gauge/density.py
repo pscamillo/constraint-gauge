@@ -29,10 +29,19 @@ import numpy as np
 
 
 def node_gap_vox(points_xyz, planar=False, sample=20000, seed=1):
-    """Median nearest-neighbour distance among generator nodes."""
+    """Median nearest-neighbour distance among DISTINCT generator nodes.
+
+    Deduplication matters: a generator laying nodes on a coarse grid
+    puts several of them at the same coordinate, and the nearest
+    neighbour of a duplicate is at distance zero. Without this the
+    measure collapses as the grid gets coarser, which is the opposite of
+    the truth (observed at grid 40: 2173 nodes, 1215 distinct, reported
+    gap 1.6 vox against a real spacing of 40).
+    """
     P = np.asarray(points_xyz, dtype=float)
     if planar:
         P = P[:, :2]
+    P = np.unique(np.round(P, 6), axis=0)
     if len(P) < 3:
         return float("nan")
     if len(P) > sample:
@@ -49,10 +58,13 @@ def node_gap_vox(points_xyz, planar=False, sample=20000, seed=1):
         return float(np.median(np.sqrt(d2.min(axis=1))))
 
 
-def check(points_xyz, tau_gt, planar=False, limit=1.0):
+def check(points_xyz, tau_gt, planar=False, limit=1.0, gt_xyz=None):
     """Return (scorable, info). tau_gt is the per-point A2.2 tolerance
     of the ground truth in the scored region; sheet_gap is twice its
-    median."""
+    median. gt_xyz is accepted and ignored: an earlier attempt to
+    exempt adapters that predict on the GT points was reverted, since
+    the case it was written for turned out not to occur (A18).
+    """
     ng = node_gap_vox(points_xyz, planar=planar)
     t = np.asarray(tau_gt, dtype=float)
     t = t[np.isfinite(t)]

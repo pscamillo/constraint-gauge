@@ -716,3 +716,62 @@ is not merely wrong: it is below the correlated-error floor and below
 what uniform random assignment would give, which means its field
 disagrees with the ground truth in a structured way rather than noisily.
 Recorded as tests/test_mesharm_calibration.py so the check reruns.
+
+### A18 — 2026-07-29 — an exemption that was written and reverted the
+same hour
+On seeing alyalya's three submissions blocked by A10, I assumed the
+adapters were predicting AT the annotated points, which would make the
+density gate meaningless: comparing the GT cloud with itself. An
+exemption was written for that case. Then it was measured: the
+submissions lay their nodes on a regular grid of about 25 voxels, and
+the median distance from an annotated point to the nearest node is 11
+voxels, never zero. The case the exemption was written for does not
+occur here, so it was reverted rather than kept as dead code. Recorded
+because the reasoning was published in the same session it was undone.
+
+### A19 — 2026-07-29 — what node spacing actually costs, and the
+corrected basis for A10
+A10 refused to score generators whose nodes are more spaced than the
+sheets, arguing that the winding difference read there is arbitrary.
+That argument was never measured. It is now, and it is WRONG, while the
+gate itself turns out to be right for a different reason.
+THE CURVE (tests/test_density_curve.py). Take the annotated arm's own
+ground truth, build a PERFECT generator from it, then snap its nodes to
+grids of increasing coarseness. Accuracy is 1.0 by construction; only
+localisation degrades.
+    grid   node gap  ratio     M1      M2      M4
+    exact     18.3   1.00   1.000   0.000   1.000
+    10 vox    20.0   1.09   0.999   0.003   0.925
+    20 vox    20.0   1.09   0.981   0.032   0.466
+    25 vox    25.0   1.36   0.967   0.061   0.291
+    30 vox    30.0   1.64   0.918   0.163   0.166
+    40 vox    40.0   2.18   0.860   0.309   0.072
+M1 barely moves out to ratio 2.18 while coverage falls by more than an
+order of magnitude. Coarse nodes do not make dw arbitrary: unmatched
+pairs leave the sample under 3.4 rather than becoming errors, so density
+is already paid for in coverage.
+WHY THE GATE STAYS ANYWAY (tests/test_density_bias.py). The surviving
+pairs are not a fair sample. From ratio 1.09 upward they skew toward
+regions where sheets are loosely spaced: median tau rises from 7.7 to
+12.2 voxels, +58%, while mean dw and separation do not get easier. So a
+high M1 at low coverage is measuring WHERE the generator could be
+matched, not how good it is. That is worse than noise, because it
+inflates silently and in the direction that flatters the subject.
+A10 therefore stands, with its basis replaced: the gate protects against
+SAMPLE SELECTION at low coverage, not against arbitrary differences. The
+threshold at ratio 1.0 remains as pre-registered; the curve shows the
+skew appears just above it.
+BUG FOUND ALONG THE WAY. node_gap_vox measured the median nearest-
+neighbour distance without deduplicating, so a generator on a coarse
+grid, which places many nodes at the same coordinate, reported a gap
+near zero. At grid 40 it read 1.6 voxels against a true spacing of 40,
+and the gate PASSED a case it should have blocked. Fixed by
+deduplicating first; the curve above is post-fix and now monotone.
+CONSEQUENCE FOR THE SUBJECTS ALREADY REPORTED. winding-sync at its
+default stride (ratio 1.09-1.18) and alyalya's three submissions (ratio
+1.15) remain not scorable, now for the measured reason rather than the
+assumed one. The author of winding-sync was sent the correction, since
+the wrong mechanism would have pointed him at the wrong fix: a finer
+stride buys coverage, not accuracy, and the observed M1 hardly moved
+when the stride went from 260 to 160 um (0.052 to 0.050), exactly as
+this curve predicts.

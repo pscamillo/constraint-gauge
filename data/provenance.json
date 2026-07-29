@@ -52,5 +52,23 @@
     "paris4-meshes": "independent",
     "pherc1218-stitched": "independent",
     "note": "BFS spanning-tree baseline (solve_bfs_tree) on the SAME graph as winding-sync/l1@stride160. Isolates solver from generator: identical seeds and constraints, only the reconciliation differs. Our stride variant per A11."
+  },
+  "S-E-improved": {
+    "paris4-annotations": "independent",
+    "paris4-meshes": "independent",
+    "pherc1218-stitched": "independent",
+    "note": "submitted by alyalya 29/07: structure-tensor lamina integration with L2 group synchronisation, variants differ in sign anchor and confidence source"
+  },
+  "S-E-improved-node-radiusconf": {
+    "paris4-annotations": "independent",
+    "paris4-meshes": "independent",
+    "pherc1218-stitched": "independent",
+    "note": "submitted by alyalya 29/07: structure-tensor lamina integration with L2 group synchronisation, variants differ in sign anchor and confidence source"
+  },
+  "S-E-improved-radial": {
+    "paris4-annotations": "independent",
+    "paris4-meshes": "independent",
+    "pherc1218-stitched": "independent",
+    "note": "submitted by alyalya 29/07: structure-tensor lamina integration with L2 group synchronisation, variants differ in sign anchor and confidence source"
   }
 }

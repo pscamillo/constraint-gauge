@@ -1,0 +1,92 @@
+{
+  "n_pairs_gt": 8156,
+  "n_scorable": 1048,
+  "M4_coverage": 0.12849435998038253,
+  "n_dw1": 214,
+  "M1_exact_dw1": 0.32710280373831774,
+  "M2_mae": 2.306603756997094,
+  "M3_bins": [
+    {
+      "bin": 0,
+      "n": 105,
+      "conf_mean": 0.37984717257790246,
+      "acc": 0.1619047619047619
+    },
+    {
+      "bin": 1,
+      "n": 105,
+      "conf_mean": 0.49975193322690936,
+      "acc": 0.21904761904761905
+    },
+    {
+      "bin": 2,
+      "n": 104,
+      "conf_mean": 0.5777105245944225,
+      "acc": 0.20192307692307693
+    },
+    {
+      "bin": 3,
+      "n": 104,
+      "conf_mean": 0.6618337658954169,
+      "acc": 0.25
+    },
+    {
+      "bin": 4,
+      "n": 104,
+      "conf_mean": 0.7233477155199135,
+      "acc": 0.17307692307692307
+    },
+    {
+      "bin": 5,
+      "n": 105,
+      "conf_mean": 0.7702652017692418,
+      "acc": 0.1619047619047619
+    },
+    {
+      "bin": 6,
+      "n": 103,
+      "conf_mean": 0.8033374575692663,
+      "acc": 0.30097087378640774
+    },
+    {
+      "bin": 7,
+      "n": 108,
+      "conf_mean": 0.8349678151963544,
+      "acc": 0.26851851851851855
+    },
+    {
+      "bin": 8,
+      "n": 105,
+      "conf_mean": 0.8750700100616084,
+      "acc": 0.17142857142857143
+    },
+    {
+      "bin": 9,
+      "n": 105,
+      "conf_mean": 0.9307120655549822,
+      "acc": 0.26666666666666666
+    }
+  ],
+  "M3_note": "confidence is an arbitrary monotone scale; the curve shows whether higher conf means higher accuracy, not absolute probabilities",
+  "adapter": "improved-ST-Lsync+umbilicus (cycle-conf)",
+  "planar_matching": false,
+  "density_gate": {
+    "node_gap_vox": 21.02379604162864,
+    "sheet_gap_vox": 18.34397340862694,
+    "ratio": 1.146087359227277,
+    "limit": 1.0,
+    "scorable": false,
+    "not_applicable": false
+  },
+  "scorable": false,
+  "not_scorable_reason": "generator node gap exceeds sheet gap (A10); metrics below are not a statement about its accuracy",
+  "subject": "S-E-improved",
+  "gt_arm": "paris4-annotations",
+  "provenance": "independent",
+  "provenance_note": "submitted by alyalya 29/07: structure-tensor lamina integration with L2 group synchronisation, variants differ in sign anchor and confidence source",
+  "publishable_as_headline": true,
+  "tau_vox": 8.80459968149033,
+  "tau_mode": "median",
+  "pitch_um": 180.0,
+  "um_per_vox": 7.91
+}

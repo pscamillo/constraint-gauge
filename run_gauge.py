@@ -153,9 +153,11 @@ def run(gt_path, adapter, pitch_um, um_per_vox, p_order, out_prefix,
 
     # A10: precondition. A generator sparser than the sheets cannot be
     # scored per location at all, and a low score would misdescribe it.
-    dens_ok, dens = density.check(adapter.points_xyz, tau, planar=planar)
-    print(f"  density gate (A10): node gap {dens['node_gap_vox']:.1f} vox, "
-          f"sheet gap {dens['sheet_gap_vox']:.1f} vox, ratio "
+    dens_ok, dens = density.check(adapter.points_xyz, tau, planar=planar,
+                                  gt_xyz=xyz)
+    print(f"  density gate (A10): node gap "
+          f"{dens['node_gap_vox']:.1f} vox, sheet gap "
+          f"{dens['sheet_gap_vox']:.1f} vox, ratio "
           f"{dens['ratio']:.2f} -> "
           f"{'SCORABLE' if dens_ok else 'NOT SCORABLE'}")
     if not dens_ok:
