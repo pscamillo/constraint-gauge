@@ -222,3 +222,16 @@ Validado em 20231022170901 (Paris 4): 8 voltas detectadas, batendo a
 contagem independente de alyalya em #general; arcos por volta
 monotonicos 16511 -> 12264 vox; 41755 pontos pos-trim, ~19x a
 densidade do braco de anotacoes.
+
+### A7 — 2026-07-28 — proveniencia sujeito-GT (motivado por Iyán Dopico,
+que a declarou contra o proprio interesse; texto aprovado por ele antes
+do commit)
+S-F: cadeia de constraints do IyanDopico/vesuvius-sheet-tools. A cadeia
+descende dos mesmos stitched labels que formam o GT-2 (1218): sujeito e
+regua compartilham parent nesse braco. Regra geral adotada: TODO sujeito
+declara proveniencia contra CADA braco de GT antes de ser pontuado, e
+todo resultado publicado sai rotulado independent / shared-parent /
+in-sample. Para S-F: Paris 4 = teste independente; 1218 = reportado com
+asterisco shared-parent. Para S-D (E1, do autor deste benchmark): janela
+z10000-11000 = in-sample; demais pares = independent. Nenhuma linha
+shared-parent ou in-sample e comparavel entre sujeitos sem o rotulo.
