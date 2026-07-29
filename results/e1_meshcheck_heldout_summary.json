@@ -1,0 +1,23 @@
+{
+  "n_pairs_gt": 20002,
+  "n_scorable": 0,
+  "M4_coverage": 0.0,
+  "n_dw1": 0,
+  "M1_exact_dw1": NaN,
+  "M2_mae": NaN,
+  "M3_bins": [],
+  "subject_kind": "pairwise",
+  "subject": "E1/held-out",
+  "gt_arm": "paris4-meshes",
+  "provenance": "independent",
+  "provenance_note": "E1 restricted to pairs outside the z10000-11000 development window",
+  "publishable_as_headline": true,
+  "estimator": {
+    "k": 2.773,
+    "orient": 1,
+    "frozen": true,
+    "source": "winding-ruler concordance v1_5",
+    "n_pairs": 20002,
+    "n_answered": 0
+  }
+}

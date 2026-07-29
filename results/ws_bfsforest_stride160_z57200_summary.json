@@ -1,0 +1,103 @@
+{
+  "n_pairs_gt": 40001,
+  "n_scorable": 11490,
+  "M4_coverage": 0.28724281892952674,
+  "n_dw1": 7495,
+  "M1_exact_dw1": 0.01694462975316878,
+  "M2_mae": 25.500609225413402,
+  "M3_bins": [
+    {
+      "bin": 0,
+      "n": 1147,
+      "conf_mean": 1.0759151921670076,
+      "acc": 0.01918047079337402
+    },
+    {
+      "bin": 1,
+      "n": 1144,
+      "conf_mean": 1.4982062870249073,
+      "acc": 0.013986013986013986
+    },
+    {
+      "bin": 2,
+      "n": 1154,
+      "conf_mean": 1.7395061433454089,
+      "acc": 0.016464471403812825
+    },
+    {
+      "bin": 3,
+      "n": 1148,
+      "conf_mean": 2.047973086142374,
+      "acc": 0.024390243902439025
+    },
+    {
+      "bin": 4,
+      "n": 1139,
+      "conf_mean": 2.304370855191384,
+      "acc": 0.013169446883230905
+    },
+    {
+      "bin": 5,
+      "n": 1160,
+      "conf_mean": 2.5278455317791164,
+      "acc": 0.014655172413793103
+    },
+    {
+      "bin": 6,
+      "n": 1148,
+      "conf_mean": 2.789168877209105,
+      "acc": 0.01916376306620209
+    },
+    {
+      "bin": 7,
+      "n": 1143,
+      "conf_mean": 3.133027906610271,
+      "acc": 0.015748031496062992
+    },
+    {
+      "bin": 8,
+      "n": 1153,
+      "conf_mean": 3.5884792498035836,
+      "acc": 0.015611448395490026
+    },
+    {
+      "bin": 9,
+      "n": 1154,
+      "conf_mean": 4.601118499254953,
+      "acc": 0.01559792027729636
+    }
+  ],
+  "M3_note": "confidence is an arbitrary monotone scale; the curve shows whether higher conf means higher accuracy, not absolute probabilities",
+  "adapter": "winding-sync/bfs@stride160",
+  "planar_matching": true,
+  "density_gate": {
+    "node_gap_vox": 68.0,
+    "sheet_gap_vox": 75.0,
+    "ratio": 0.9066666666666666,
+    "limit": 1.0,
+    "scorable": true
+  },
+  "scorable": true,
+  "adapter_z": 57200.0,
+  "adapter_stats": {
+    "n_seeds": 67925,
+    "n_edges": 152459,
+    "level": 2,
+    "voxel_um": 9.6,
+    "z_full_res": 57200,
+    "z_level": 14300,
+    "tiled": false,
+    "seed_stride_um": 160.0,
+    "author_default_stride_um": 260.0,
+    "is_author_config": false
+  },
+  "subject": "winding-sync/bfs@stride160",
+  "gt_arm": "paris4-meshes",
+  "provenance": "independent",
+  "provenance_note": "BFS spanning-tree baseline (solve_bfs_tree) on the SAME graph as winding-sync/l1@stride160. Isolates solver from generator: identical seeds and constraints, only the reconciliation differs. Our stride variant per A11.",
+  "publishable_as_headline": true,
+  "tau_vox": 35.27593652120723,
+  "tau_mode": "median",
+  "pitch_um": 180.0,
+  "um_per_vox": 2.4
+}

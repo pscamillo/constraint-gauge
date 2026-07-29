@@ -17,9 +17,13 @@ a directory of verified segment meshes (A3.1/A3.2), one collection per
 mesh.
 
 Adapters:  json:PATH                     AdapterResult as JSON
-           windingsync:SCROLL:Z[:LEVEL]  winding-sync L1 on that slice
-           bfs:SCROLL:Z[:LEVEL]          BFS baseline, identical graph
-           (Z is a full-resolution index; LEVEL defaults to 2)
+           windingsync:SCROLL:Z[:LEVEL[:STRIDE_UM]]
+                                         winding-sync L1 on that slice
+           bfs:SCROLL:Z[:LEVEL[:STRIDE_UM]]
+                                         BFS baseline, identical graph
+           (Z is full-resolution; LEVEL defaults to 2; STRIDE_UM
+            overrides the author's TracingConfig and makes the run OUR
+            variant, labelled winding-sync/<solver>@stride<N> per A11)
 
 tau is measured, not assumed: half the distance from each GT point to
 its nearest adjacent-winding neighbour (A2.2), falling back to the
@@ -46,13 +50,16 @@ def build_adapter(spec):
     kind, _, rest = spec.partition(":")
     if kind == "json":
         return adapters.load_json(rest)
-    if kind in ("windingsync", "bfs"):
+    if kind in ("windingsync", "bfs", "bfssingle"):
         parts = rest.split(":")
         scroll, z = parts[0], int(parts[1])
         level = int(parts[2]) if len(parts) > 2 else 2
-        solver = "l1" if kind == "windingsync" else "bfs"
+        stride = float(parts[3]) if len(parts) > 3 else None
+        solver = {"windingsync": "l1", "bfs": "bfs",
+                  "bfssingle": "bfs-single"}[kind]
         return adapters.from_winding_sync(scroll, z, level=level,
-                                          solver=solver)
+                                          solver=solver,
+                                          seed_stride_um=stride)
     raise SystemExit(f"unknown adapter spec: {spec}")
 
 

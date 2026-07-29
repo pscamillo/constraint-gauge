@@ -661,3 +661,58 @@ step.
 Scope is unchanged from A12: one slice, one scroll, and Paris 4 is not
 among the 13 GP scrolls the tool targets. The stride is our variant per
 A11, applied identically to both solvers so the comparison is clean.
+
+### A16 — 2026-07-29 — BFS forest, and an audit of the bench's own code
+by alyalya
+alyalya, submitting to the bench, also read its source and sent a diff.
+The substantive point: winding_sync.solver.solve_bfs_tree roots a single
+spanning tree at node 0, so on a fragmented patch graph every node
+outside node 0's component keeps winding 0 and the baseline collapses
+toward constant. One root per component is the fair thing to beat, since
+each component carries its own zero, which is the relative-winding
+convention the bench scores under.
+Adopted. gauge/adapters.py now uses a per-component BFS forest for
+solver="bfs"; the upstream single-root behaviour remains available as
+solver="bfs-single" for comparison.
+IMPACT ON A15, measured before adopting: the graph at z 57200 has 688
+components, but the largest holds 99.0% of nodes and node 0 sits in it,
+so single-root left only 1.0% of nodes zeroed. Rerun with the forest:
+M1 0.017 and M2 25.5, identical to the single-root figures. A15 stands
+unchanged, now on the correct baseline. The criticism was right in
+principle and immaterial on this slice, and both halves are recorded.
+
+### A17 — 2026-07-29 — is the mesh arm measuring correctly? and the two
+arms never meet
+THE ARMS DO NOT OVERLAP, and this is a hard limit rather than an
+inconvenience. The annotated arm sits where the lasagna grad_mag field
+exists (z up to about 18948 full-res); the mesh arm sits above it
+(z 29420-73889). A subject built on that field cannot be scored on the
+mesh arm at all: running E1 there returns coverage 0.000, every pair
+unanswered, because the field it integrates does not exist in that
+region. So no subject can be cross-validated across the two arms, and a
+number from one arm can never be checked against the other.
+SANITY FROM INSIDE, since cross-validation is unavailable. Feed the mesh
+arm adapters whose error rate is known by construction: take the mesh GT
+itself and corrupt a fraction f of windings by +/-1. A pair still scores
+if neither endpoint was corrupted or if both moved the same way, so
+
+    P(hit) = (1-f)^2 + f^2/2
+
+Measured against that closed form on 30000 pairs:
+    f=0%   M1 1.000 (form 1.000)
+    f=10%  M1 0.814 (form 0.815)
+    f=30%  M1 0.537 (form 0.535)
+    f=50%  M1 0.378 (form 0.375)
+    f=100% M1 0.505 (form 0.500)
+Maximum deviation 0.005. The arm returns what it is given, to three
+decimal places, at every level. Coverage is unaffected by accuracy, as
+it should be.
+THE FLOOR IS NOT ZERO, and this changes how any score is read. A fully
+corrupted adapter scores 0.5, because half its corrupted pairs move
+together and the shared error cancels in the difference. Correlated
+error is partly invisible to a metric on differences. Consequently a
+subject scoring 0.050 at dw=1, as winding-sync does on the slice in A12,
+is not merely wrong: it is below the correlated-error floor and below
+what uniform random assignment would give, which means its field
+disagrees with the ground truth in a structured way rather than noisily.
+Recorded as tests/test_mesharm_calibration.py so the check reruns.
