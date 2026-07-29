@@ -346,3 +346,27 @@ nearly the same gap, and point-level resampling gave a spurious 0.7 um
 interval.
 Verdicts from the next run under this rule count, whichever way they
 fall.
+
+### A6.5 — 2026-07-29 — the arbitration as posed compares different
+populations: verdict (e) on scope
+The two claims are not statements about PHerc Paris 4. The 225 um comes
+from winding-sync's README as a median over the 13 Grand Prize scrolls
+(207-259 um), and Paris 4 is not among them. The 187.3 um is this
+author's atlas median over 35+ scrolls, not its Paris 4 entry. The
+measurement made here covers ONE scroll, and one that is outside the
+first claim's population, so neither claim can be confirmed or refuted
+by it. Section 6.2's verdicts (a)-(d) do not apply and the arm returns
+(e), for scope rather than data quality. Recorded BEFORE looking up
+either method's per-scroll value for Paris 4.
+The well-posed version, adopted for the next round: both methods emit a
+per-scroll number, so the comparison is what each method assigns TO
+PARIS 4 against what the gauge measures ON PARIS 4. That requires the
+atlas's Paris 4 entry and a winding-sync run on Paris 4 (subject S-A),
+and it is like for like.
+STANDING RESULT, independent of the arbitration. The gauge's own
+measurement holds on its own terms: sheet spacing on PHerc Paris 4 =
+180.0 um, 95% interval across meshes [173.6, 199.5], from nine
+human-verified GP segment meshes, direct point-to-curve estimator, no
+axis and no spacing constant, each mesh median an upper bound by about
+1.3%. Robustness: the five meshes needing no wrap-skip correction give
+the same 180.0 um median as all nine.
