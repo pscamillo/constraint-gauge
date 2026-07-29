@@ -63,13 +63,44 @@ def _nearest(query_xyz, points_xyz, tau, chunk=20000):
     return np.where(ok, idx, -1), np.where(ok, dist, np.inf)
 
 
-def match(gt_xyz, pairs, adapter, tau):
+def match(gt_xyz, pairs, adapter, tau, planar=False):
     """tau: scalar (3.3) or per-GT-point array indexed like gt_xyz
-    (A2.1). With an array, each pair endpoint uses its own tolerance."""
+    (A2.1/A2.2). With an array, each pair endpoint uses its own
+    tolerance.
+
+    planar=True is for adapters that exist on a single z plane (a
+    slice-based generator, addendum A9). The GT is a 3D cloud, so
+    almost no GT point falls exactly on the plane and 3D distance would
+    spend the whole tolerance on the z offset. In planar mode a GT
+    point is eligible if |z_gt - z_plane| <= its own tau, and matching
+    then uses in-plane (x, y) distance against the same tau. The slab
+    thickness is therefore not a free parameter: it is the same
+    tolerance that governs matching everywhere else.
+    """
     tau = np.asarray(tau)
     tau_a = tau if tau.ndim == 0 else tau[pairs["a"]]
     tau_b = tau if tau.ndim == 0 else tau[pairs["b"]]
-    a_pt, a_d = _nearest(gt_xyz[pairs["a"]], adapter.points_xyz, tau_a)
-    b_pt, b_d = _nearest(gt_xyz[pairs["b"]], adapter.points_xyz, tau_b)
+    P = adapter.points_xyz
+    if planar:
+        zs = np.unique(np.round(P[:, 2], 3))
+        if len(zs) != 1:
+            raise ValueError(f"planar matching needs a single-plane "
+                             f"adapter; got {len(zs)} distinct z")
+        z_plane = float(zs[0])
+        A = gt_xyz[pairs["a"]].copy()
+        B = gt_xyz[pairs["b"]].copy()
+        in_a = np.abs(A[:, 2] - z_plane) <= tau_a
+        in_b = np.abs(B[:, 2] - z_plane) <= tau_b
+        A[:, 2] = z_plane
+        B[:, 2] = z_plane
+        a_pt, a_d = _nearest(A, P, tau_a)
+        b_pt, b_d = _nearest(B, P, tau_b)
+        a_pt = np.where(in_a, a_pt, -1)
+        b_pt = np.where(in_b, b_pt, -1)
+        a_d = np.where(in_a, a_d, np.inf)
+        b_d = np.where(in_b, b_d, np.inf)
+    else:
+        a_pt, a_d = _nearest(gt_xyz[pairs["a"]], P, tau_a)
+        b_pt, b_d = _nearest(gt_xyz[pairs["b"]], P, tau_b)
     scorable = (a_pt >= 0) & (b_pt >= 0)
     return MatchResult(scorable, a_pt, b_pt, a_d, b_d)

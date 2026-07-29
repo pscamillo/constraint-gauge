@@ -460,3 +460,19 @@ addendum as the correction of record, and the runner will carry a scope
 field so the mismatch cannot recur.
 The measurement inside that file stands unchanged and is not affected:
 Paris 4 sheet spacing 180.0 um, 95% across meshes [173.6, 199.5].
+
+### A9 — 2026-07-29 — planar matching for slice-based generators
+(sealed before the first subject run it applies to)
+winding-sync and generators like it work one z slice at a time: every
+node lives on a single plane. The mesh GT is a 3D cloud spanning tens
+of thousands of voxels in z, so under 3D matching almost no GT point is
+reachable and coverage is zero by construction rather than by quality.
+Rule: when an adapter's points share one z, a GT point is ELIGIBLE if
+|z_gt - z_plane| <= its own tau, and matching then uses in-plane (x, y)
+distance against that same tau. The slab thickness is not a free
+parameter; it is the tolerance that already governs matching
+everywhere. Coverage is reported against the eligible subset, and the
+summary records planar_matching and the plane's z so a planar line is
+never silently compared with a volumetric one.
+Demonstrated in tests/test_planar.py: a perfect single-plane generator
+scores M1 = 1.0 under planar matching against a 3D sheet cloud.

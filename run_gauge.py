@@ -16,9 +16,10 @@ Ground truth arms: --gt for annotated point collections, --gt-mesh for
 a directory of verified segment meshes (A3.1/A3.2), one collection per
 mesh.
 
-Adapters:  json:PATH            AdapterResult serialized as JSON
-           windingsync:SCROLL:Z winding-sync L1 on that slice
-           bfs:SCROLL:Z         BFS baseline on the same graph
+Adapters:  json:PATH                     AdapterResult as JSON
+           windingsync:SCROLL:Z[:LEVEL]  winding-sync L1 on that slice
+           bfs:SCROLL:Z[:LEVEL]          BFS baseline, identical graph
+           (Z is a full-resolution index; LEVEL defaults to 2)
 
 tau is measured, not assumed: half the distance from each GT point to
 its nearest adjacent-winding neighbour (A2.2), falling back to the
@@ -46,9 +47,12 @@ def build_adapter(spec):
     if kind == "json":
         return adapters.load_json(rest)
     if kind in ("windingsync", "bfs"):
-        scroll, _, z = rest.partition(":")
+        parts = rest.split(":")
+        scroll, z = parts[0], int(parts[1])
+        level = int(parts[2]) if len(parts) > 2 else 2
         solver = "l1" if kind == "windingsync" else "bfs"
-        return adapters.from_winding_sync(scroll, int(z), solver=solver)
+        return adapters.from_winding_sync(scroll, z, level=level,
+                                          solver=solver)
     raise SystemExit(f"unknown adapter spec: {spec}")
 
 
@@ -113,8 +117,16 @@ def run(gt_path, adapter, pitch_um, um_per_vox, p_order, out_prefix,
           f"range {tau.min():.1f}-{tau.max():.1f} vox "
           f"(median fallback {tau_med:.1f})")
 
+    planar = len(np.unique(np.round(adapter.points_xyz[:, 2], 3))) == 1
+    if planar:
+        zp = float(adapter.points_xyz[0, 2])
+        near = np.abs(xyz[:, 2] - zp) <= tau
+        print(f"  single-plane adapter at z={zp:.0f}: planar matching "
+              f"(A9), {int(near.sum())} gt points within their own tau "
+              f"of the plane")
+
     for label, t in [("tau/2", tau / 2), ("tau", tau), ("2tau", tau * 2)]:
-        mres = match.match(xyz, pairs, adapter, t)
+        mres = match.match(xyz, pairs, adapter, t, planar=planar)
         table = metrics.score(pairs, mres, adapter)
         summ = metrics.summarize(pairs, mres, table)
         line = (f"  [{label:5s}] scorable {summ['n_scorable']:5d} "
@@ -124,6 +136,11 @@ def run(gt_path, adapter, pitch_um, um_per_vox, p_order, out_prefix,
         if label == "tau":
             metrics.write_csv(f"{out_prefix}_pairs.csv", table)
             summ["adapter"] = adapter.name
+            summ["planar_matching"] = bool(planar)
+            if planar:
+                summ["adapter_z"] = float(adapter.points_xyz[0, 2])
+            if hasattr(adapter, "stats"):
+                summ["adapter_stats"] = adapter.stats
             summ["subject"] = subject or adapter.name
             summ["gt_arm"] = gt_arm or ("paris4-meshes" if gt_mesh
                                         else "paris4-annotations")
