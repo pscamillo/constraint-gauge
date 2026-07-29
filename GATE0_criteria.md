@@ -307,3 +307,15 @@ limite extrapolado 181.9 um (erro 1.1%, r2 0.999), allpairs 4971 um
 confirmando que e teto e nao competidor. Registro de erro: o primeiro
 modelo tentado (linear em n^-1/2) subestimava 16% e foi rejeitado pelo
 proprio teste sintetico antes de qualquer contato com dado real.
+
+### A6.2 — 2026-07-29 — papeis dos dois bracos na arbitragem
+(registrado ANTES de qualquer medicao real)
+Braco de MESHES (A3.1/A3.3) e o ARBITRO: nem o atlas (187.3) nem o
+winding-sync (225) usaram os segmentos GP verificados como insumo.
+Braco ANOTADO tem DEPENDENCIA DECLARADA com o 187.3: o atlas deste
+autor foi calibrado contra anotacoes humanas do Paris 4, entao ele
+partilha insumo com esse claim, ainda que grandeza e metodo sejam
+outros. Consequencia fixada antes do numero: uma confirmacao do 187.3
+que venha apenas do braco anotado NAO conta como confirmacao. Um
+veredito contra qualquer dos dois claims vale nos dois bracos. Regra
+6.4 aplica-se igualmente ao 225 e ao 187.3: cada autor ve antes.
