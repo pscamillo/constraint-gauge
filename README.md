@@ -6,7 +6,8 @@ winding annotations, and reports whether its confidence means anything.
 
 The winding constraints page lists "accurate (or have some way to
 measure its confidence/accuracy)" as the first requirement for an ideal
-generator. No shared instrument for that exists. This is one.
+generator. I could not find a shared instrument for that, so this is
+one.
 
 ## How the ruler was checked
 
