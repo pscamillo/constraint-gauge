@@ -8,6 +8,60 @@ The winding constraints page lists "accurate (or have some way to
 measure its confidence/accuracy)" as the first requirement for an ideal
 generator. No shared instrument for that exists. This is one.
 
+## How the ruler was checked
+
+A benchmark's own numbers are worth what its verification is worth, so
+that comes first.
+
+**Does it return what it is given?** Corrupt the ground truth at known
+rates and see whether the measured score matches the algebra. A pair
+survives corruption if neither endpoint moved or if both moved the same
+way, so the expected score is `(1-f)^2 + f^2/2`:
+
+| corrupted | measured M1 | closed form |
+|-----------|-------------|-------------|
+| 0%        | 1.000       | 1.000       |
+| 10%       | 0.814       | 0.815       |
+| 30%       | 0.537       | 0.535       |
+| 50%       | 0.378       | 0.375       |
+| 100%      | 0.505       | 0.500       |
+
+Maximum deviation 0.005 across every level. Note the floor that implies:
+a fully corrupted subject scores 0.5, not 0, because correlated error
+cancels in a difference. Any reading of a score has to keep that in mind.
+`tests/test_mesharm_calibration.py`.
+
+**Are the gates measured or argued?** The density precondition was
+originally justified by an argument, that coarse nodes make winding
+differences arbitrary. Measuring it refuted that: a perfect generator
+snapped to coarser and coarser grids keeps M1 above 0.9 out to a node
+gap 2.2x the sheet spacing, while coverage falls from 1.000 to 0.072.
+The gate stayed, on a different and measured basis, that the pairs
+surviving at low coverage skew toward loosely spaced regions and inflate
+the score by selection. `tests/test_density_curve.py`,
+`tests/test_density_bias.py`.
+
+**Is each estimator checked against a known answer before use?** The
+mesh wrap detector recovers a synthetic spiral of known 528 um spacing
+to 0.0% error; the density-extrapolation estimator recovers synthetic
+sheets of known 180 um spacing to 1.1%, after a first convergence model
+that was off by 16% and was rejected by that same test before touching
+real data. `tests/test_meshgt.py`, `tests/test_mesh_spacing.py`,
+`tests/test_pitch.py`.
+
+**Is the reimplementation faithful?** The E1 subject reimplements an
+estimator that lives in another repository; the two agree to 0.000e+00
+on 300 pairs, bit-identical rather than approximated.
+
+**What happened when checks failed.** Four results were invalidated by
+this process before publication, one gate had its stated justification
+replaced after measurement, and one exemption was written and reverted
+in the same session. All of it is in `GATE0_criteria.md` as dated
+addenda, with the superseded numbers left in place rather than removed.
+
+Every test above runs from a clean checkout; the mesh ones need the GP
+segment meshes downloaded first.
+
 ## Submitting a generator
 
 One file. Points, a winding number per point, a confidence per point:
@@ -100,12 +154,6 @@ subject can be cross-validated across them.
 point it is half the distance to the nearest annotated neighbour on an
 adjacent winding. No spacing constant, no umbilicus, no radial model.
 Tighter costs coverage, never accuracy.
-
-**Does the ruler measure correctly?** Corrupt the mesh GT at known rates
-and the arm returns the closed form `(1-f)^2 + f^2/2` to within 0.005 at
-every level. Note the floor that implies: a fully corrupted adapter
-scores 0.5, not 0, because correlated error cancels in a difference.
-`tests/test_mesharm_calibration.py`.
 
 Metrics, fixed before any measurement: exact agreement on dw=1 pairs,
 mean absolute residual, a confidence vs accuracy calibration curve, and
