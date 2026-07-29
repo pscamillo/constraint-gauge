@@ -39,7 +39,7 @@ import os
 import numpy as np
 
 from gauge import gt as gt_mod
-from gauge import adapters, match, metrics, provenance
+from gauge import adapters, match, metrics, provenance, density
 
 
 def build_adapter(spec):
@@ -91,14 +91,41 @@ def load_mesh_arm(root, stride=10):
     return (np.vstack(X), np.concatenate(W), np.concatenate(C))
 
 
+def gt_local_tau_probe(xyz, wind, coll, pitch_um, um_per_vox):
+    """Tolerance used to decide slab membership: the same A2.2 measure,
+    with the median fallback where it is undefined."""
+    from gauge.localtau import gt_local_tau
+    t = gt_local_tau(xyz, wind, coll)
+    med = match.tau_vox(pitch_um, um_per_vox)
+    return np.where(np.isfinite(t), t, med)
+
+
 def run(gt_path, adapter, pitch_um, um_per_vox, p_order, out_prefix,
         pitch_table=None, gt_mesh=None, subject=None, gt_arm=None,
-        max_pairs=None):
+        max_pairs=None, mesh_stride=10):
     if gt_mesh:
-        print(f"gt arm: meshes under {gt_mesh}")
-        xyz, wind, coll = load_mesh_arm(gt_mesh)
+        print(f"gt arm: meshes under {gt_mesh} (stride {mesh_stride})")
+        xyz, wind, coll = load_mesh_arm(gt_mesh, stride=mesh_stride)
     else:
         xyz, wind, coll = gt_mod.load_points(gt_path, p_order=p_order)
+    # A9: for a single-plane adapter, restrict the GT to the slab the
+    # generator can reach BEFORE building pairs. Sampling pairs from the
+    # whole arm and filtering afterwards wastes the entire budget on
+    # regions the generator does not cover.
+    planar = len(np.unique(np.round(adapter.points_xyz[:, 2], 3))) == 1
+    if planar:
+        zp = float(adapter.points_xyz[0, 2])
+        tau_probe = gt_local_tau_probe(xyz, wind, coll, pitch_um,
+                                       um_per_vox)
+        keep = np.abs(xyz[:, 2] - zp) <= tau_probe
+        n_before = len(xyz)
+        xyz, wind, coll = xyz[keep], wind[keep], coll[keep]
+        print(f"  single-plane adapter at z={zp:.0f}: A9 slab keeps "
+              f"{len(xyz)} of {n_before} gt points "
+              f"({len(np.unique(coll))} collections)")
+        if len(xyz) < 4:
+            raise SystemExit("A9 slab too thin: fewer than 4 gt points "
+                             "within tolerance of the adapter plane")
     pairs = gt_mod.build_pairs(xyz, wind, coll, max_pairs=max_pairs)
     tau_med = match.tau_vox(pitch_um, um_per_vox)
     from gauge.localtau import gt_local_tau, combine_tau
@@ -117,13 +144,18 @@ def run(gt_path, adapter, pitch_um, um_per_vox, p_order, out_prefix,
           f"range {tau.min():.1f}-{tau.max():.1f} vox "
           f"(median fallback {tau_med:.1f})")
 
-    planar = len(np.unique(np.round(adapter.points_xyz[:, 2], 3))) == 1
-    if planar:
-        zp = float(adapter.points_xyz[0, 2])
-        near = np.abs(xyz[:, 2] - zp) <= tau
-        print(f"  single-plane adapter at z={zp:.0f}: planar matching "
-              f"(A9), {int(near.sum())} gt points within their own tau "
-              f"of the plane")
+    # A10: precondition. A generator sparser than the sheets cannot be
+    # scored per location at all, and a low score would misdescribe it.
+    dens_ok, dens = density.check(adapter.points_xyz, tau, planar=planar)
+    print(f"  density gate (A10): node gap {dens['node_gap_vox']:.1f} vox, "
+          f"sheet gap {dens['sheet_gap_vox']:.1f} vox, ratio "
+          f"{dens['ratio']:.2f} -> "
+          f"{'SCORABLE' if dens_ok else 'NOT SCORABLE'}")
+    if not dens_ok:
+        print("  the generator emits nodes coarser than the sheets, so a "
+              "ground-truth point has no node of its own and any winding "
+              "difference read here is arbitrary. Reporting the ratio "
+              "instead of a score.")
 
     for label, t in [("tau/2", tau / 2), ("tau", tau), ("2tau", tau * 2)]:
         mres = match.match(xyz, pairs, adapter, t, planar=planar)
@@ -137,6 +169,12 @@ def run(gt_path, adapter, pitch_um, um_per_vox, p_order, out_prefix,
             metrics.write_csv(f"{out_prefix}_pairs.csv", table)
             summ["adapter"] = adapter.name
             summ["planar_matching"] = bool(planar)
+            summ["density_gate"] = dens
+            summ["scorable"] = bool(dens_ok)
+            if not dens_ok:
+                summ["not_scorable_reason"] = (
+                    "generator node gap exceeds sheet gap (A10); metrics "
+                    "below are not a statement about its accuracy")
             if planar:
                 summ["adapter_z"] = float(adapter.points_xyz[0, 2])
             if hasattr(adapter, "stats"):
@@ -174,6 +212,8 @@ def main():
                     help="subject id for the provenance registry (A7)")
     ap.add_argument("--gt-arm", default=None,
                     help="gt arm id for the provenance registry (A7)")
+    ap.add_argument("--mesh-stride", type=int, default=10,
+                    help="grid subsampling when extracting mesh gt")
     ap.add_argument("--max-pairs", type=int, default=None,
                     help="deterministic cap on scored pairs")
     ap.add_argument("--adapter", required=True)
@@ -189,7 +229,7 @@ def main():
     run(a.gt, build_adapter(a.adapter), a.pitch_um, a.um_per_vox,
         a.p_order, a.out_prefix, pitch_table=a.pitch_table,
         gt_mesh=a.gt_mesh, subject=a.subject, gt_arm=a.gt_arm,
-        max_pairs=a.max_pairs)
+        max_pairs=a.max_pairs, mesh_stride=a.mesh_stride)
 
 
 if __name__ == "__main__":

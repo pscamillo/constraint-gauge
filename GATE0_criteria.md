@@ -476,3 +476,32 @@ summary records planar_matching and the plane's z so a planar line is
 never silently compared with a volumetric one.
 Demonstrated in tests/test_planar.py: a perfect single-plane generator
 scores M1 = 1.0 under planar matching against a 3D sheet cloud.
+
+### A10 — 2026-07-29 — density precondition: can this generator be
+scored at all?
+Per-location scoring asks which sheet a point sits on. A generator can
+only answer where it emits nodes finer than the sheets. If the typical
+gap between neighbouring generator nodes exceeds the local sheet
+spacing, a ground-truth point has no node of its own: the nearest node
+belongs to a neighbouring sheet and the winding difference read there
+is arbitrary, however good the generator's internal solution is.
+Gate, a PRECONDITION and not a metric: node_gap = median nearest-
+neighbour distance among generator nodes; sheet_gap = twice the median
+A2.2 tolerance of the GT in the scored region; ratio = node_gap /
+sheet_gap. ratio < 1 means sheets are resolved and scoring is
+meaningful. ratio >= 1 is reported as NOT SCORABLE together with the
+ratio, never as a low score. The distinction is the point: a low score
+is a claim about accuracy, and this is not one.
+FIRST APPLICATION, and the reason the gate exists. winding-sync v0.2.0
+(commit 20a31e1) has TracingConfig.seed_stride_um = 260 um by design,
+while PHerc Paris 4 sheets sit about 180 um apart. Measured node gap on
+z 57200: 82 vox at pyramid level 2 and 86 vox at level 1 (the stride is
+in micrometres, so the pyramid level does not change it) against a
+75 vox sheet gap, ratio 1.09 and 1.15. The M1 of 0.05 obtained before
+this gate existed is NOT a result about winding-sync and is recorded
+only as the diagnostic that led here. The generator's own field is
+locally coherent on that slice: 70% of neighbouring seeds differ by at
+most one winding.
+This is an actionable finding about a parameter, not a defect of the
+method, and it is invisible to any internal consistency measure. Under
+6.4 the author sees it before it goes anywhere.
