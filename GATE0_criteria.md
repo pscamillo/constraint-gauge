@@ -775,3 +775,136 @@ the wrong mechanism would have pointed him at the wrong fix: a finer
 stride buys coverage, not accuracy, and the observed M1 hardly moved
 when the stride went from 260 to 160 um (0.052 to 0.050), exactly as
 this curve predicts.
+
+### A11 — 2026-07-29 — stride variants are separate subjects
+(RECORD-KEEPING NOTE, appended 2026-07-29 on discovery by audit: this
+addendum has been cited by A12, A14, A15, by gauge/adapters.py,
+run_gauge.py and data/provenance.json since 29/07, but its text never
+landed in this file. The same failure already happened once with A6.3
+and was recorded there; it recurred and was not caught until now. The
+rule below was in force in code and in the provenance notes from the
+moment the first variant ran. Nothing else was edited.)
+Rule: any run of an external tool with a parameter we changed is OUR
+variant, not the author's tool. It is registered as a separate subject,
+labelled <tool>/<solver>@stride<N> (or the analogous parameter tag),
+its summary records is_author_config: false, and no such run is ever
+reported as the tool itself. Only the author's default configuration
+carries the tool's own name.
+
+### A7.2 — 2026-07-29 — held-out on the same campaign is shared-parent
+(prompted by an external audit of this repository; applies the A7
+definition to this benchmark's own estimator)
+A7 defines shared-parent as a subject that derives from data the GT
+also derives from. The E1 estimator's frozen parameters (k = 2.773,
+orient = +1) were fitted on the z10000-11000 window of the PHerc
+Paris 4 human annotations, and the annotated GT arm IS those
+annotations. Fitting on a disjoint subset of the same annotation
+campaign therefore falls under shared-parent, not independent: the
+evaluated pairs were never used in fitting, but subject and ruler share
+annotators, protocol and error distribution on that arm.
+RELABELLED: E1/held-out on paris4-annotations goes from independent to
+shared-parent. The declaration inside A7 ("all other pairs =
+independent") is superseded on this point. Consequences:
+publishable_as_headline is false for that line, and the 0.923 held-out
+M1 is reportable only with its label, never as a headline comparable
+across subjects. The number itself is unchanged. On the mesh arm E1
+stays independent: its field does not exist there and its parameters
+owe nothing to the meshes (coverage 0.000, A17). The direction of this
+change is against the benchmark author's own result, which is what A7
+was written to force.
+
+### A20 — 2026-07-29 — external audit: corrections of record
+A line-by-line audit of this repository (documents, code, results and
+git history) found the items below. Each is corrected in the commit
+carrying this addendum; superseded wording stays in place upstream,
+per the sealing rule.
+1. A17 OVERCLAIMED, and the sentence is withdrawn. "Below what uniform
+   random assignment would give" is wrong: uniform assignment over the
+   ~200-winding span the subject actually emits yields M1 of order
+   1/K, about 0.005, so 0.050 sits ABOVE uniform chance, not below.
+   The 0.5 floor holds only for the +/-1 corruption family, whose
+   errors are small and correlated; a field with M2 = 21.5 is not in
+   that family, so the floor does not bound it and the "disagrees in a
+   structured way" inference does not follow. What survives of A17:
+   the calibration table itself, the floor for +/-1 corruption, and
+   the warning that correlated error is partly invisible to a metric
+   on differences. The author of the affected tool is being told of
+   this withdrawal under 6.4.
+2. The README said the held-out E1 M1 was "the same figure as inside
+   it". Inside is 0.900, outside 0.923. The correct statement is that
+   the calibration transfers with no degradation; the figures differ.
+3. The README gave the E1 confidence deciles as "0.42 to 0.53". Those
+   are the first and last deciles; the maximum is 0.59 (deciles 7 and
+   9), the spread is 17 points and the curve is not monotone. The
+   curve is computed over all scorable pairs (dw 1-6), not dw=1 only,
+   which the text now states. The conclusion (confidence close to
+   uninformative) stands and is slightly stronger.
+4. Every committed summary carried tau_mode "median" although the
+   A2.2 measured tolerance was the rule actually applied; the field
+   only reflected the absence of a radial table. The runner now
+   records the real source (count of points on A2.2 vs fallback).
+5. publishable_as_headline ignored the density gate: NOT SCORABLE runs
+   were stamped publishable, and their summaries carried M1/M2 as if
+   scored. The flag is now provenance AND gate, and gated summaries
+   move their metrics under diagnostic_only.
+6. results/arb_annotations.json stored the bootstrap-median r2 (0.557)
+   under the name fit_r2 while the validity message quoted the
+   main-fit r2 (0.823). Both numbers are real; the field naming made
+   the artefact look self-contradictory. The runner now writes
+   fit_r2_main and fit_r2_boot_median; committed files regenerate at
+   this head, and this addendum is the reading key for the old ones.
+7. Section 4 of the sealed body promised "ECE reported" and no ECE was
+   ever emitted; the accumulator in gauge/metrics.py was dead code.
+   Classic ECE is undefined when confidences are arbitrary monotone
+   scales, so the runner now reports M3_ece_rank: the same weighted
+   deviation with confidence replaced by its normalized rank. The
+   sealed promise is fulfilled in rank form, with the limitation
+   stated next to the number.
+8. A6.7 said the superseded result file was "left in place rather
+   than rewritten", yet the same commit appended three fields to it.
+   The measurement was untouched, but the description was inaccurate:
+   the file was annotated in place, and that is what A6.7 should have
+   said.
+9. Three public figures had no artefact in this repository: the E1
+   fidelity check (0.000e+00 over 300 pairs), the winding-sync
+   consistency() figures (0.670 / 0.881 / 0.611) and the winding
+   spans of A12 (216 for L1, 257 for BFS on the same graph). The
+   session log preserved the scripts and their raw outputs; they are
+   committed now as tests/test_e1_fidelity.py and
+   tools/probe_ws_consistency.py, to be re-run so their outputs land
+   in results/. Until that run, those figures rest on the session
+   record of 29/07.
+10. The standing mesh-arm results were produced with --mesh-stride 4,
+    which no summary recorded. The runner now stamps mesh_stride and
+    max_pairs into every summary.
+11. tests/test_density_bias.py and tests/test_density_curve.py, the
+    two tests behind A19's measured gate basis, hardcoded a private
+    path and did not run from a clean checkout, contradicting the
+    README sentence that said they did. They now take the GT path by
+    argument or CG_GT_JSON, and the README states which tests need
+    which data. pytest also collected nothing because the tests are
+    scripts; a collection shim (tests/test_pytest_smoke.py) now runs
+    the self-contained ones.
+12. run_gauge.py's own docstring showed the annotated arm with
+    um-per-vox 2.4, the exact frame error of the A6.3 erratum, while
+    the README showed the correct 7.91. Fixed to 7.91.
+13. Open pre-registered commitments, listed so they read as pending
+    rather than forgotten: the section 5 ablation (CORPUS_SPACING_UM
+    225 vs 187.3) has not run, and GT-2 (PHerc1218 stitched labels,
+    9054 pairs) has no loader and no result although the provenance
+    registry already labels subjects against it. Both stand.
+14. Committed results predate the current code (an older density_gate
+    field appears in some summaries). All standing results regenerate
+    at the head carrying this addendum; figures are expected unchanged
+    and any difference will be recorded by addendum.
+Also corrected in the same commit, without separate numbering: the
+sheet-spacing headline now carries its region (the GP-mesh band,
+z 29420-73889), and the README notes that the annotated arm, lower in
+the scroll, measures about 145 um locally, consistent with the
+published 136-259 um radial variation, the two regions being disjoint
+(A17); the wrap-skip acceptance is stated with its limitation (two
+corrected meshes land at 262 and 343 um and pass the consistency band,
+while the five uncorrected meshes alone give the same 180.0 median);
+match.py's docstring described the superseded 3.3 rule as the one in
+force; and A11, cited since 29/07, is appended above with a discovery
+note.

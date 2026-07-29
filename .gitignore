@@ -1,2 +1,5 @@
 __pycache__/
 *.pyc
+data/gp_meshes/
+probe_level1.py
+INDEPENDENT

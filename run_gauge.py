@@ -2,10 +2,13 @@
 """run_gauge.py - score one constraint generator against human annotations.
 
     python run_gauge.py --gt relative_windings.json \
-        --adapter json:result.json --subject E1 \
+        --adapter json:result.json --subject my-generator \
         --gt-arm paris4-annotations \
-        --pitch-um 180 --um-per-vox 2.4 \
-        --out-prefix paris4_e1
+        --pitch-um 180 --um-per-vox 7.91 \
+        --out-prefix paris4_mine
+
+    (the annotated arm lives in the 7.91 um volume; 2.4 um here was the
+     frame error of the A6.3 erratum. The mesh arm is the 2.4 um one.)
 
     python run_gauge.py --gt-mesh data/gp_meshes \
         --adapter json:result.json --subject winding-sync/l1 \
@@ -161,10 +164,10 @@ def run(gt_path, adapter, pitch_um, um_per_vox, p_order, out_prefix,
           f"{dens['ratio']:.2f} -> "
           f"{'SCORABLE' if dens_ok else 'NOT SCORABLE'}")
     if not dens_ok:
-        print("  the generator emits nodes coarser than the sheets, so a "
-              "ground-truth point has no node of its own and any winding "
-              "difference read here is arbitrary. Reporting the ratio "
-              "instead of a score.")
+        print("  the generator emits nodes coarser than the sheets. the "
+              "pairs that survive matching skew toward loosely spaced "
+              "regions and any score there is inflated by selection "
+              "(A19). Reporting the ratio instead of a score.")
 
     for label, t in [("tau/2", tau / 2), ("tau", tau), ("2tau", tau * 2)]:
         mres = match.match(xyz, pairs, adapter, t, planar=planar)
@@ -181,9 +184,20 @@ def run(gt_path, adapter, pitch_um, um_per_vox, p_order, out_prefix,
             summ["density_gate"] = dens
             summ["scorable"] = bool(dens_ok)
             if not dens_ok:
+                # A10/A20: a gated run is NOT SCORABLE, not low-scoring.
+                # Metrics move under diagnostic_only (per-pair CSV keeps
+                # them for author-facing diagnosis); the headline fields
+                # carry None so no table can quote them by accident.
+                summ["diagnostic_only"] = {
+                    k: summ.pop(k) for k in
+                    ("M1_exact_dw1", "M2_mae", "M3_bins", "M3_ece_rank")
+                    if k in summ}
+                summ["M1_exact_dw1"] = None
+                summ["M2_mae"] = None
                 summ["not_scorable_reason"] = (
-                    "generator node gap exceeds sheet gap (A10); metrics "
-                    "below are not a statement about its accuracy")
+                    "generator node gap exceeds sheet gap (A10); the run "
+                    "is not scored. diagnostic_only carries the raw "
+                    "figures for the author's diagnosis only")
             if planar:
                 summ["adapter_z"] = float(adapter.points_xyz[0, 2])
             if hasattr(adapter, "stats"):
@@ -195,15 +209,32 @@ def run(gt_path, adapter, pitch_um, um_per_vox, p_order, out_prefix,
                                              summ["gt_arm"])
             summ["provenance"] = lab
             summ["provenance_note"] = note
-            summ["publishable_as_headline"] = provenance.publishable(lab)
+            # A20 item 5: headline requires independent provenance AND a
+            # passed density gate.
+            summ["publishable_as_headline"] = (provenance.publishable(lab)
+                                               and bool(dens_ok))
             print(f"  provenance: {summ['subject']} vs "
                   f"{summ['gt_arm']} -> {lab.upper()}"
                   + ("" if provenance.publishable(lab)
                      else "  (label required when reporting)"))
-            summ["tau_vox"] = float(np.mean(t)) if hasattr(t, "__len__") else t
-            summ["tau_mode"] = "local" if pitch_table else "median"
+            summ["tau_vox_mean"] = float(np.mean(t)) \
+                if hasattr(t, "__len__") else float(t)
+            summ["tau_vox_median"] = float(np.median(t)) \
+                if hasattr(t, "__len__") else float(t)
+            # A20 item 4: the A2.2 measured tolerance is always the
+            # primary rule; record where it actually applied.
+            summ["tau_points_a22"] = n_gt
+            summ["tau_points_fallback"] = int(len(xyz) - n_gt)
+            if n_gt == len(xyz):
+                summ["tau_mode"] = "a2.2-measured"
+            elif pitch_table:
+                summ["tau_mode"] = "a2.2-measured + a2.1-table + 3.3-median fallback"
+            else:
+                summ["tau_mode"] = "a2.2-measured + 3.3-median fallback"
             summ["pitch_um"] = pitch_um
             summ["um_per_vox"] = um_per_vox
+            summ["mesh_stride"] = mesh_stride if gt_mesh else None
+            summ["max_pairs"] = max_pairs
             json.dump(summ, open(f"{out_prefix}_summary.json", "w"),
                       indent=2)
             print(f"  wrote {out_prefix}_pairs.csv, "

@@ -32,6 +32,13 @@ def main():
     ap.add_argument("--arm", required=True)
     ap.add_argument("--p-order", default="xyz", choices=["xyz", "zyx"])
     ap.add_argument("--boot", type=int, default=40)
+    ap.add_argument("--claims-per-scroll", action="store_true",
+                    help="the claims in --claims are per-scroll numbers "
+                         "for THIS scroll (the well-posed A6.5 form); "
+                         "letter verdicts then govern. Without it, the "
+                         "claims are population medians and the governing "
+                         "verdict is (e) on scope, with the mechanical "
+                         "letter kept for the record")
     ap.add_argument("--out", default=None)
     a = ap.parse_args()
 
@@ -154,10 +161,29 @@ def main():
            "estimator": "nearest adjacent-winding, "
                         "density-extrapolated (A6.1)",
            "limit_um": limit, "ci95_lo_um": lo, "ci95_hi_um": hi,
-           "fit_r2": r2, "curve": curve,
+           # A20 item 6: two different r2 exist and used to share a name
+           "fit_r2_main": r2_main, "fit_r2_boot_median": r2,
+           "curve": curve,
            "allpairs_median_um": ap_med,
-           "verdict": letter, "verdict_note": why,
            "claims": {"atlas_um": 187.3, "winding_sync_um": 225.0}}
+    # A6.5/A6.7: the 6.2 letters only govern when the claims are
+    # per-scroll numbers for the measured scroll. Otherwise the letter
+    # is recorded as mechanical and the governing verdict is (e).
+    if a.claims_per_scroll:
+        res["verdict"] = letter
+        res["verdict_note"] = why
+        res["scope"] = "per-scroll claims (A6.5 well-posed form)"
+    else:
+        res["verdict_mechanical_6_2"] = letter
+        res["verdict_mechanical_note"] = why
+        res["verdict"] = "e"
+        res["verdict_note"] = ("population scope (A6.5): the claims are "
+                               "medians over other scroll populations; a "
+                               "single-scroll measurement cannot confirm "
+                               "or refute them")
+        res["scope"] = "single scroll vs population medians"
+        print(f"\nGOVERNING VERDICT: (e) on scope (A6.5); the letter "
+              f"above is mechanical and recorded as such")
     if a.out:
         json.dump(res, open(a.out, "w"), indent=2)
         print(f"wrote {a.out}")

@@ -3,7 +3,10 @@
 M1  exact agreement on dw=1 pairs (scorable only)
 M2  mean absolute residual |dw_pred - dw_human| over scorable pairs
 M3  calibration: pair confidence (min of endpoint confs) vs empirical
-    accuracy, 10 quantile bins; ECE reported
+    accuracy, 10 quantile bins. Classic ECE is undefined here because
+    confidences are arbitrary monotone scales, so M3_ece_rank is
+    reported instead: the same weighted deviation with the confidence
+    replaced by its normalized rank (A20 item 7)
 M4  coverage: fraction of GT pairs scorable
 
 Every public figure must be derived from the per-pair CSV this module
@@ -63,8 +66,10 @@ def summarize(pairs, mres, table, n_bins=10):
             ece_num += m.sum() * abs(hit[m].mean() -
                                      _rank01(conf, m))
         out["M3_bins"] = bins
+        out["M3_ece_rank"] = float(ece_num / len(conf))
     else:
         out["M3_bins"] = bins
+        out["M3_ece_rank"] = float("nan")
     out["M3_note"] = ("confidence is an arbitrary monotone scale; the "
                       "curve shows whether higher conf means higher "
                       "accuracy, not absolute probabilities")

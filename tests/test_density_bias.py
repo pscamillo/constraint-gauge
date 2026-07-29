@@ -33,9 +33,16 @@ from tests.test_density_curve import snap_to_grid                   # noqa
 
 
 def main():
-    gt_path = sys.argv[1] if len(sys.argv) > 1 else (
-        os.path.expanduser("~/challenges/vesuvius/spiral-dataset/"
-                           "PHercParis4/relative_windings.json"))
+    gt_path = (sys.argv[1] if len(sys.argv) > 1 else
+               os.environ.get("CG_GT_JSON") or
+               os.path.expanduser("~/challenges/vesuvius/spiral-dataset/"
+                                  "PHercParis4/relative_windings.json"))
+    if not os.path.exists(gt_path):
+        raise SystemExit(
+            f"annotated GT not found: {gt_path}\n"
+            "this test needs the Paris 4 relative_windings.json "
+            "(spiral-input dataset). Pass its path as the first "
+            "argument or set CG_GT_JSON.")
     xyz, wind, coll = gt_mod.load_points(gt_path)
     pairs = gt_mod.build_pairs(xyz, wind, coll)
     tau = combine_tau(gt_local_tau(xyz, wind, coll),

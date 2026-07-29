@@ -152,7 +152,8 @@
   "limit_um": 144.22695110900614,
   "ci95_lo_um": 211.07041211125775,
   "ci95_hi_um": 230.65737677164645,
-  "fit_r2": 0.9997391298457226,
+  "fit_r2_main": 0.9997979975274464,
+  "fit_r2_boot_median": 0.9997391298457226,
   "curve": [
     {
       "fraction": 0.05,
@@ -196,13 +197,13 @@
     }
   ],
   "allpairs_median_um": 23518.982382058755,
-  "verdict": "a",
-  "verdict_note": "187.3 (atlas) compatible, winding-sync not",
   "claims": {
     "atlas_um": 187.3,
     "winding_sync_um": 225.0
   },
-  "verdict_superseded_by": "A6.5 (scope): verdicts (a)-(d) do not apply",
-  "governing_verdict": "e",
-  "governing_verdict_note": "claims are medians over other scroll populations; one scroll cannot confirm or refute them"
+  "verdict_mechanical_6_2": "a",
+  "verdict_mechanical_note": "187.3 (atlas) compatible, winding-sync not",
+  "verdict": "e",
+  "verdict_note": "population scope (A6.5): the claims are medians over other scroll populations; a single-scroll measurement cannot confirm or refute them",
+  "scope": "single scroll vs population medians"
 }

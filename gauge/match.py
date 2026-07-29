@@ -1,7 +1,11 @@
 """gauge.match - annotation-to-point matching, GATE0 section 3 (sealed).
 
+The tolerance rule in force is A2.2: tau measured at each GT point as
+half the distance to its nearest adjacent-winding neighbour, with the
+A2.1 radial table and then the 3.3 median as fallbacks (tightest wins).
+The sealed 3.3 text is kept below for the record:
 tau = 0.5 x median pitch of the scroll, in voxels of the measured level
-(section 3.3, fixed). A GT pair (A, B) is SCORABLE iff both endpoints
+(section 3.3). A GT pair (A, B) is SCORABLE iff both endpoints
 have an adapter point within tau (euclidean, full-res voxels). Nearest
 neighbour; ties broken by smaller distance then smaller index (3.5,
 deterministic). Non-scorable pairs count in COVERAGE only (3.4).

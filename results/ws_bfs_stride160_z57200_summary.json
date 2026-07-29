@@ -67,8 +67,9 @@
       "acc": 0.01559792027729636
     }
   ],
+  "M3_ece_rank": 0.48320278503046127,
   "M3_note": "confidence is an arbitrary monotone scale; the curve shows whether higher conf means higher accuracy, not absolute probabilities",
-  "adapter": "winding-sync/bfs@stride160",
+  "adapter": "winding-sync/bfs-single@stride160",
   "planar_matching": true,
   "density_gate": {
     "node_gap_vox": 68.0,
@@ -96,8 +97,13 @@
   "provenance": "independent",
   "provenance_note": "BFS spanning-tree baseline (solve_bfs_tree) on the SAME graph as winding-sync/l1@stride160. Isolates solver from generator: identical seeds and constraints, only the reconciliation differs. Our stride variant per A11.",
   "publishable_as_headline": true,
-  "tau_vox": 35.27593652120723,
-  "tau_mode": "median",
+  "tau_vox_mean": 35.27593652120723,
+  "tau_vox_median": 37.5,
+  "tau_points_a22": 4663,
+  "tau_points_fallback": 0,
+  "tau_mode": "a2.2-measured",
   "pitch_um": 180.0,
-  "um_per_vox": 2.4
+  "um_per_vox": 2.4,
+  "mesh_stride": 4,
+  "max_pairs": 40000
 }

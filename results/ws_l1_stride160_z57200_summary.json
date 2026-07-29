@@ -67,6 +67,7 @@
       "acc": 0.053726169844020795
     }
   ],
+  "M3_ece_rank": 0.4521835962063383,
   "M3_note": "confidence is an arbitrary monotone scale; the curve shows whether higher conf means higher accuracy, not absolute probabilities",
   "adapter": "winding-sync/l1@stride160",
   "planar_matching": true,
@@ -96,8 +97,13 @@
   "provenance": "independent",
   "provenance_note": "OUR variant of abundantjoe/winding-sync v0.2.0: identical code and solver, TracingConfig.seed_stride_um lowered from 260 to 160 um. Not the author's configuration and not to be reported as winding-sync itself (A11).",
   "publishable_as_headline": true,
-  "tau_vox": 35.27593652120723,
-  "tau_mode": "median",
+  "tau_vox_mean": 35.27593652120723,
+  "tau_vox_median": 37.5,
+  "tau_points_a22": 4663,
+  "tau_points_fallback": 0,
+  "tau_mode": "a2.2-measured",
   "pitch_um": 180.0,
-  "um_per_vox": 2.4
+  "um_per_vox": 2.4,
+  "mesh_stride": 4,
+  "max_pairs": 40000
 }

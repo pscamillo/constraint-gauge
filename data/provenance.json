@@ -15,13 +15,13 @@
     "paris4-annotations": "in-sample",
     "paris4-meshes": "independent",
     "pherc1218-stitched": "independent",
-    "note": "pscamillo winding-ruler E1; calibrated on the paris 4 z10000-11000 window. Held-out lines outside that window are reported separately and are independent"
+    "note": "pscamillo winding-ruler E1; calibrated on the paris 4 z10000-11000 window. Held-out lines outside that window are reported separately as shared-parent (A7.2)."
   },
   "E1/held-out": {
-    "paris4-annotations": "independent",
+    "paris4-annotations": "shared-parent",
     "paris4-meshes": "independent",
     "pherc1218-stitched": "independent",
-    "note": "E1 restricted to pairs outside the z10000-11000 development window"
+    "note": "E1 restricted to pairs outside the z10000-11000 development window. Its frozen parameters (k, orient) were fitted on that window of the same Paris 4 annotation campaign the arm is built from, so the line is shared-parent per A7.2: the evaluated pairs were never used in fitting, but subject and ruler share annotators, protocol and error distribution. Independent on the mesh arm, where its field does not exist (coverage 0.000, A17)."
   },
   "iyan-constraint-chain": {
     "paris4-annotations": "independent",

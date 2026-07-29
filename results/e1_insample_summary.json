@@ -5,6 +5,7 @@
   "n_dw1": 201,
   "M1_exact_dw1": 0.900497512437811,
   "M2_mae": 0.3895184135977337,
+  "M3_ece_rank": 0.23314447592067983,
   "M3_bins": [
     {
       "bin": 0,
@@ -71,7 +72,7 @@
   "subject": "E1",
   "gt_arm": "paris4-annotations",
   "provenance": "in-sample",
-  "provenance_note": "pscamillo winding-ruler E1; calibrated on the paris 4 z10000-11000 window. Held-out lines outside that window are reported separately and are independent",
+  "provenance_note": "pscamillo winding-ruler E1; calibrated on the paris 4 z10000-11000 window. Held-out lines outside that window are reported separately as shared-parent (A7.2).",
   "publishable_as_headline": false,
   "estimator": {
     "k": 2.773,

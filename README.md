@@ -53,6 +53,8 @@ real data. `tests/test_meshgt.py`, `tests/test_mesh_spacing.py`,
 **Is the reimplementation faithful?** The E1 subject reimplements an
 estimator that lives in another repository; the two agree to 0.000e+00
 on 300 pairs, bit-identical rather than approximated.
+`tests/test_e1_fidelity.py` (needs the winding-ruler repository and the
+spiral dataset locally).
 
 **What happened when checks failed.** Four results were invalidated by
 this process before publication, one gate had its stated justification
@@ -60,8 +62,14 @@ replaced after measurement, and one exemption was written and reverted
 in the same session. All of it is in `GATE0_criteria.md` as dated
 addenda, with the superseded numbers left in place rather than removed.
 
-Every test above runs from a clean checkout; the mesh ones need the GP
-segment meshes downloaded first.
+The tests are scripts: run them as `python tests/test_X.py` (a pytest
+shim, `tests/test_pytest_smoke.py`, collects the self-contained ones).
+The synthetic tests need nothing. The density tests
+(`test_density_bias.py`, `test_density_curve.py`) need the Paris 4
+annotation file: pass its path as the first argument or set
+`CG_GT_JSON`. The mesh calibration tests need the GP segment meshes
+under `data/gp_meshes`. The fidelity test needs the winding-ruler
+repository.
 
 ## Submitting a generator
 
@@ -133,9 +141,11 @@ is `independent`, `shared-parent` (it derives from data the GT also
 derives from) or `in-sample` (it was developed on those very pairs).
 Declarations live in `data/provenance.json` and every result carries its
 label. An undeclared line must not be published. The rule applies to the
-author of this bench too: the E1 estimator here is `in-sample` on the
-window it was calibrated on, and only its held-out line is comparable
-with anyone else's.
+author of this bench too, and bites him: the E1 estimator here is
+`in-sample` on the window it was calibrated on and `shared-parent` on
+the rest of the annotated arm, because its frozen parameters come from
+a disjoint window of the same annotation campaign (A7.2). Its held-out
+line is reported only with that label and is not a headline.
 
 ## How ground truth is built
 
@@ -174,34 +184,50 @@ that replaced a gate's stated justification after measuring it.
 
 ## Standing results
 
-**Sheet spacing on PHerc Paris 4: 180.0 um**, 95% across meshes
-[173.6, 199.5], from nine verified meshes with a direct point-to-curve
-estimator. Independent of the winding atlas in input, method and
-parameters; the atlas entry for Paris 4 is 182.4 um, 1.3% away.
+**Sheet spacing on PHerc Paris 4, in the GP-mesh band (z 29420-73889):
+180.0 um**, 95% across meshes [173.6, 199.5], from nine verified meshes
+with a direct point-to-curve estimator. Independent of the winding
+atlas in input, method and parameters; the atlas entry for Paris 4 is
+182.4 um, 1.3% away. Two of the nine per-mesh medians carry a wrap-skip
+correction (A6.4) and land high, at 262 and 343 um; the five meshes
+needing no correction give the same 180.0 median on their own. The
+annotated arm, lower in the scroll, measures about 145 um locally,
+consistent with the published 136-259 um radial variation; the two
+regions do not overlap (A17), so this headline is a statement about the
+mesh band, not the whole scroll.
 
 **Internal agreement is not external accuracy.** On one slice of Paris 4,
 winding-sync's own `consistency()` reports 0.670 exact agreement between
 its constraints while the same field scores 0.050 against verified mesh
-ground truth. Its L1 solver does beat the BFS baseline on the identical
+ground truth (probe and raw output: `tools/probe_ws_consistency.py`). Its L1 solver does beat the BFS baseline on the identical
 graph, 0.050 against 0.017, so the ceiling sits in the constraints
 rather than the reconciliation. One slice, one scroll, not a
 characterisation of the tool, and the author had every number before it
 was published.
 
 **The bench's own estimator, held out.** E1 with its parameters frozen
-from a 1000-slice development window scores M1 0.923 at dw=1 on the 7450
-pairs outside that window, the same figure as inside it. Its confidence,
-measured for the first time, is close to uninformative: 0.42 to 0.53
-across deciles.
+from a 1000-slice development window scores M1 0.923 at dw=1 (n=1718)
+on the pairs outside that window, against 0.900 inside it: the
+calibration transfers with no degradation. The line is shared-parent
+on this arm (A7.2), fitted on a disjoint window of the same annotation
+campaign, so it is not a headline comparable with other subjects. Its
+confidence, measured for the first time over all scorable pairs
+(dw 1-6), is close to uninformative and not monotone: 0.42 in the
+least-confident decile, 0.53 in the most-confident, peaking at 0.59 in
+between.
 
 ## Subjects
 
-winding-sync (abundantjoe), BFS forest baseline, E1 (mine, held out),
-three structure-tensor variants (alyalya), constraint chain (Iyán
-Dopico).
+Scored: winding-sync/l1 at our stride variant (A11), BFS forest
+baseline on the same graph, E1 (mine, held out, shared-parent per
+A7.2). Gated NOT SCORABLE at author or submitted configuration:
+winding-sync default stride, alyalya's three structure-tensor variants
+(resubmissions pending). Registered, not yet run: Iyán Dopico's
+constraint chain (S-F), the PHerc1218 arm (GT-2), and the section 5
+spacing-prior ablation.
 
-Addenda so far came from review by Paul Henderson, sean (bruniss), Iyán
-Dopico and alyalya, whose submission also found a bug in this
-repository's baseline solver.
+Addenda so far came from review by Paul Henderson, sean (bruniss),
+djosey, Iyán Dopico and alyalya, whose submission also found a bug in
+this repository's baseline solver.
 
 MIT.

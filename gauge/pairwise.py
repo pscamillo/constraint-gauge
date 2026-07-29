@@ -84,7 +84,9 @@ def summarize_pairs(pairs, result, table, n_bins=10):
         if len(table["dw_true"]) else float("nan")
     conf, hit = table["conf"], table["hit"].astype(float)
     bins = []
+    ece_num = 0.0
     if len(conf) >= n_bins and len(np.unique(conf)) > 1:
+        from gauge.metrics import _rank01
         qs = np.quantile(conf, np.linspace(0, 1, n_bins + 1))
         qs[-1] += 1e-9
         for k in range(n_bins):
@@ -93,6 +95,11 @@ def summarize_pairs(pairs, result, table, n_bins=10):
                 bins.append({"bin": k, "n": int(sel.sum()),
                              "conf_mean": float(conf[sel].mean()),
                              "acc": float(hit[sel].mean())})
+                ece_num += sel.sum() * abs(hit[sel].mean() -
+                                           _rank01(conf, sel))
+        out["M3_ece_rank"] = float(ece_num / len(conf))
+    else:
+        out["M3_ece_rank"] = float("nan")
     out["M3_bins"] = bins
     out["subject_kind"] = "pairwise"
     return out

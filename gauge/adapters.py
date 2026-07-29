@@ -21,7 +21,7 @@ Three ways to produce one:
   3. BFS baseline on the same winding-sync graph   -> from_winding_sync(
                                                         solver="bfs")
 
-Implementation note (recorded for the GATE0 adendo): pair confidence for
+Implementation note (GATE0 addendum A6): pair confidence for
 the calibration curve is min(conf_a, conf_b) - the pair is only as
 trustworthy as its weaker endpoint.
 """

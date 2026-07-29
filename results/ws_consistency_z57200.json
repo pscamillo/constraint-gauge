@@ -1,0 +1,26 @@
+{
+  "scroll": "PHercParis4",
+  "z_full_res": 57200,
+  "level": 2,
+  "seed_stride_um": 160.0,
+  "is_author_config": false,
+  "note": "our stride variant per A11; internal consistency() is the tool's own metric, quoted in A12 next to the external M1 on the same graph",
+  "n_seeds": 67925,
+  "n_edges": 152459,
+  "l1": {
+    "w_min": -27.0,
+    "w_max": 189.0,
+    "span": 216.0
+  },
+  "consistency": {
+    "satisfied_exactly": 0.6695308246807339,
+    "within_one": 0.8808532129949691,
+    "mean_abs_residual": 0.6105510333925842,
+    "winding_range": 216.0
+  },
+  "bfs_single_root": {
+    "w_min": -60.0,
+    "w_max": 197.0,
+    "span": 257.0
+  }
+}

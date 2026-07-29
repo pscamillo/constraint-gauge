@@ -5,6 +5,7 @@
   "n_dw1": 1718,
   "M1_exact_dw1": 0.9225844004656577,
   "M2_mae": 0.5751677852348993,
+  "M3_ece_rank": 0.2139919506334349,
   "M3_bins": [
     {
       "bin": 0,
@@ -70,9 +71,9 @@
   "subject_kind": "pairwise",
   "subject": "E1/held-out",
   "gt_arm": "paris4-annotations",
-  "provenance": "independent",
-  "provenance_note": "E1 restricted to pairs outside the z10000-11000 development window",
-  "publishable_as_headline": true,
+  "provenance": "shared-parent",
+  "provenance_note": "E1 restricted to pairs outside the z10000-11000 development window. Its frozen parameters (k, orient) were fitted on that window of the same Paris 4 annotation campaign the arm is built from, so the line is shared-parent per A7.2: the evaluated pairs were never used in fitting, but subject and ruler share annotators, protocol and error distribution. Independent on the mesh arm, where its field does not exist (coverage 0.000, A17).",
+  "publishable_as_headline": false,
   "estimator": {
     "k": 2.773,
     "orient": 1,
