@@ -254,3 +254,32 @@ direcao conservadora — subcontar perde cobertura, nunca corrompe
 rotulos, pois as voltas mantidas sao internamente consistentes.
 Bracos totais: 271864 pontos de mesh + 2173 anotados, mesmo frame
 (volume 20260411134726, z max 75784 comporta ambos).
+
+### A7.1 — 2026-07-29 — proveniencia no codigo (implementa A7)
+Registro em data/provenance.json: por sujeito, um rotulo por braco de
+GT (independent / shared-parent / in-sample) mais nota de justificativa.
+O runner carimba cada summary com subject, gt_arm, provenance e
+publishable_as_headline; sujeito ou braco nao declarado sai UNDECLARED
+com aviso. O bloqueio e social, nao tecnico: linha sem rotulo nao se
+publica. Declarado hoje: winding-sync/l1 e /bfs (independent nos tres
+bracos), E1 (in-sample no braco anotado; E1/held-out independent),
+cadeia do Iyan (shared-parent no 1218, independent no Paris 4, por
+declaracao do autor), variante angle-binned da alyalya (independent).
+
+### A3.3 — 2026-07-29 — trim adaptativo e collection de winding unico
+O trim de emenda (A3.1) so se aplica quando sobram >= 2 windings; caso
+contrario roda sem trim. Collection que ainda assim fica com um unico
+winding e DESCARTADA: sem winding vizinho nao ha par dw>=1 nem tau
+medido, entao carregar esses pontos so os exporia ao fallback frouxo.
+Efeito nas 10 meshes do Paris 4: 20231031143852 e 20231106155351
+recuperadas com trim=0 (3 windings cada, +22853 pontos), 20231210121321
+descartada (1 volta). Braco final: 9 meshes, 289171 pontos, tau A2.2
+medido em 100% deles, faixa 3.4-37.5 vox. O fallback mediano deixa de
+ser usado no braco de meshes.
+
+### A8 — 2026-07-29 — escala (correcao de implementacao, sem efeito em regra)
+build_pairs passa a contar pares por histograma de windings e amostrar
+por bloco: memoria O(max_pairs), nao O(todos os pares). Vizinho mais
+proximo (matcher e tau A2.2) passa a usar KD-tree com fallback para
+forca bruta em blocos. Nenhum criterio mudou; o mesmo self-test que
+consumia 31 GB e nao terminava agora roda em 2.4 s com 775 MB.

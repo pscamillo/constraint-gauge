@@ -38,44 +38,61 @@ def load_points(path, p_order="xyz"):
 def build_pairs(xyz, wind, coll, max_dw=6, max_pairs=None, seed=1):
     """Within-collection pairs with integer winding difference 1..max_dw.
 
-    Vectorized per collection (mesh collections reach thousands of
-    points). max_pairs: deterministic thinning cap on the TOTAL number
-    of pairs, uniform over collections' pair pools (rng seeded).
+    Memory is O(max_pairs), never O(all pairs): the pair count per
+    (collection, w_lo, w_hi) block is computed from a winding histogram,
+    which is exact and costs nothing, and each block is then sampled to
+    its quota. Mesh collections reach 10^8+ pairs, so enumerating first
+    and thinning after is not an option.
 
     Returns dict of arrays: a_idx, b_idx (indices into xyz), dw (int,
-    positive; a is the lower-winding point of the pair).
+    positive; a is the lower-winding point of the pair). Collections
+    with fewer than two windings contribute nothing.
     """
-    a_all, b_all, d_all = [], [], []
+    rng = np.random.default_rng(seed)
+    blocks = []          # (idx_lo, idx_hi, dw, n_pairs)
+    total = 0
     for cid in np.unique(coll):
         idx = np.nonzero(coll == cid)[0]
         if len(idx) < 2:
             continue
-        W = wind[idx]
-        for a0 in range(0, len(idx), 2000):
-            a1 = min(a0 + 2000, len(idx))
-            dw = W[:, None] - W[None, a0:a1]          # (n, chunk)
-            r = np.round(dw)
-            m = (np.abs(dw - r) <= 1e-6) & (np.abs(r) >= 1) & \
-                (np.abs(r) <= max_dw)
-            ii, jj = np.nonzero(m)
-            jj = jj + a0
-            keep = ii > jj                            # each pair once
-            ii, jj = ii[keep], jj[keep]
-            rr = np.round(W[ii] - W[jj]).astype(int)
-            lo = np.where(rr > 0, jj, ii)
-            hi = np.where(rr > 0, ii, jj)
-            a_all.append(idx[lo])
-            b_all.append(idx[hi])
-            d_all.append(np.abs(rr))
-    if not a_all:
+        w = wind[idx]
+        wr = np.round(w)
+        integral = np.abs(w - wr) <= 1e-6
+        idx, wr = idx[integral], wr[integral].astype(int)
+        if len(idx) < 2:
+            continue
+        levels, inv = np.unique(wr, return_inverse=True)
+        if len(levels) < 2:
+            continue
+        buckets = [idx[inv == k] for k in range(len(levels))]
+        for a in range(len(levels)):
+            for b in range(a + 1, len(levels)):
+                dw = int(levels[b] - levels[a])
+                if dw < 1 or dw > max_dw:
+                    continue
+                n = len(buckets[a]) * len(buckets[b])
+                if n:
+                    blocks.append((buckets[a], buckets[b], dw, n))
+                    total += n
+    if not blocks:
         return {"a": np.empty(0, int), "b": np.empty(0, int),
                 "dw": np.empty(0, int)}
-    a = np.concatenate(a_all)
-    b = np.concatenate(b_all)
-    d = np.concatenate(d_all)
-    if max_pairs is not None and len(d) > max_pairs:
-        sel = np.random.default_rng(seed).choice(len(d), size=max_pairs,
-                                                 replace=False)
-        sel.sort()
-        a, b, d = a[sel], b[sel], d[sel]
-    return {"a": a, "b": b, "dw": d}
+
+    frac = 1.0 if (max_pairs is None or total <= max_pairs) \
+        else max_pairs / total
+    A, B, D = [], [], []
+    for lo, hi, dw, n in blocks:
+        if frac >= 1.0:
+            g = np.meshgrid(np.arange(len(lo)), np.arange(len(hi)),
+                            indexing="ij")
+            ia, ib = g[0].ravel(), g[1].ravel()
+        else:
+            k = int(round(n * frac))
+            if k == 0:
+                continue
+            flat = rng.choice(n, size=k, replace=False)
+            ia, ib = np.divmod(flat, len(hi))
+        A.append(lo[ia]), B.append(hi[ib])
+        D.append(np.full(len(ia), dw, dtype=int))
+    return {"a": np.concatenate(A), "b": np.concatenate(B),
+            "dw": np.concatenate(D)}

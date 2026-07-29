@@ -40,25 +40,43 @@ def gt_local_tau(gt_xyz, wind, coll, um_per_vox=None):
     each annotated location. Points with no adjacent-winding neighbor
     in their collection get nan (caller falls back).
 
+    KD-tree per (collection, winding level) when scipy is available:
+    mesh collections reach 40k+ points, where pairwise distance matrices
+    are not viable. Chunked brute force otherwise.
+
     Returns tau_vox (N,) with nan where undefined.
     """
+    try:
+        from scipy.spatial import cKDTree
+    except ImportError:
+        cKDTree = None
+
     n = len(gt_xyz)
     tau = np.full(n, np.nan)
     for cid in np.unique(coll):
         idx = np.nonzero(coll == cid)[0]
         if len(idx) < 2:
             continue
-        P = gt_xyz[idx]
-        W = wind[idx]
+        P, W = gt_xyz[idx], np.round(wind[idx])
+        levels = np.unique(W)
         best = np.full(len(idx), np.inf)
-        for a in range(0, len(idx), 2000):
-            b = min(a + 2000, len(idx))
-            d2 = ((P[a:b, None, :] - P[None, :, :]) ** 2).sum(-1)
-            adj = np.abs(W[a:b, None] - W[None, :]) == 1
-            d2 = np.where(adj, d2, np.inf)
-            best[a:b] = d2.min(axis=1)
+        for lv in levels:
+            here = np.nonzero(W == lv)[0]
+            nb = np.nonzero(np.abs(W - lv) == 1)[0]
+            if len(nb) == 0:
+                continue
+            if cKDTree is not None:
+                d, _ = cKDTree(P[nb]).query(P[here], k=1, workers=-1)
+            else:
+                d = np.full(len(here), np.inf)
+                for a in range(0, len(here), 2000):
+                    b = min(a + 2000, len(here))
+                    d2 = ((P[here[a:b], None, :] - P[None, nb, :]) ** 2
+                          ).sum(-1)
+                    d[a:b] = np.sqrt(d2.min(axis=1))
+            best[here] = np.minimum(best[here], d)
         ok = np.isfinite(best)
-        tau[idx[ok]] = 0.5 * np.sqrt(best[ok])
+        tau[idx[ok]] = 0.5 * best[ok]
     return tau
 
 

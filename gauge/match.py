@@ -26,21 +26,40 @@ class MatchResult:
     b_dist: np.ndarray
 
 
-def _nearest(query_xyz, points_xyz, tau, chunk=2000):
+def _nearest(query_xyz, points_xyz, tau, chunk=20000):
     """Nearest adapter point within tau for each query. tau may be a
-    scalar or a per-query array (A2.1 local tau). Chunked brute force:
-    memory stays bounded at chunk x N."""
-    q = np.asarray(query_xyz)
-    tau = np.asarray(tau)
+    scalar or a per-query array (A2.1/A2.2 local tau).
+
+    Uses a KD-tree when scipy is available: mesh arms reach hundreds of
+    thousands of points, where materializing pairwise distances is not
+    viable. Falls back to chunked brute force otherwise, with the same
+    tie-breaking (smallest index) in both paths.
+    """
+    q = np.asarray(query_xyz, dtype=np.float64)
+    P = np.asarray(points_xyz, dtype=np.float64)
+    tau = np.asarray(tau, dtype=np.float64)
+    tau_arr = tau if tau.ndim else np.full(len(q), float(tau))
+
+    try:
+        from scipy.spatial import cKDTree
+    except ImportError:
+        cKDTree = None
+
+    if cKDTree is not None:
+        tree = cKDTree(P)
+        dist, idx = tree.query(q, k=1, workers=-1)
+        ok = dist <= tau_arr
+        return np.where(ok, idx, -1), np.where(ok, dist, np.inf)
+
     idx = np.empty(len(q), dtype=int)
     dist = np.empty(len(q))
     for a in range(0, len(q), chunk):
         b = min(a + chunk, len(q))
-        d2 = ((q[a:b, None, :] - points_xyz[None, :, :]) ** 2).sum(-1)
-        i = np.argmin(d2, axis=1)              # smallest index on ties
+        d2 = ((q[a:b, None, :] - P[None, :, :]) ** 2).sum(-1)
+        i = np.argmin(d2, axis=1)
         idx[a:b] = i
         dist[a:b] = np.sqrt(d2[np.arange(b - a), i])
-    ok = dist <= (tau if tau.ndim else np.full(len(q), float(tau)))
+    ok = dist <= tau_arr
     return np.where(ok, idx, -1), np.where(ok, dist, np.inf)
 
 

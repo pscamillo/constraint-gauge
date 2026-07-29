@@ -1,0 +1,38 @@
+{
+  "winding-sync/l1": {
+    "paris4-annotations": "independent",
+    "paris4-meshes": "independent",
+    "pherc1218-stitched": "independent",
+    "note": "abundantjoe/winding-sync; generated from CT via structure tensor, no human labels upstream"
+  },
+  "winding-sync/bfs": {
+    "paris4-annotations": "independent",
+    "paris4-meshes": "independent",
+    "pherc1218-stitched": "independent",
+    "note": "BFS baseline on the same graph as winding-sync/l1"
+  },
+  "E1": {
+    "paris4-annotations": "in-sample",
+    "paris4-meshes": "independent",
+    "pherc1218-stitched": "independent",
+    "note": "pscamillo winding-ruler E1; calibrated on the paris 4 z10000-11000 window. Held-out lines outside that window are reported separately and are independent"
+  },
+  "E1/held-out": {
+    "paris4-annotations": "independent",
+    "paris4-meshes": "independent",
+    "pherc1218-stitched": "independent",
+    "note": "E1 restricted to pairs outside the z10000-11000 development window"
+  },
+  "iyan-constraint-chain": {
+    "paris4-annotations": "independent",
+    "paris4-meshes": "independent",
+    "pherc1218-stitched": "shared-parent",
+    "note": "IyanDopico/vesuvius-sheet-tools; the chain descends from the same stitched labels that form the 1218 arm. Declared by the author, A7"
+  },
+  "alyalya-angle-binned": {
+    "paris4-annotations": "independent",
+    "paris4-meshes": "independent",
+    "pherc1218-stitched": "independent",
+    "note": "angle-binned radial pitch, abundantjoe/winding-sync#1"
+  }
+}
