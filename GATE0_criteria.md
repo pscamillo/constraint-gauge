@@ -574,3 +574,64 @@ roughly 70-90 wraps for this scroll by the winding atlas. A field that
 is internally coherent and globally inflated is consistent with what
 the external score reports.
 The author received these numbers by DM before this commit, per 6.4.
+
+### A13 — 2026-07-29 — pairwise subjects, a second kind of generator
+Two families exist in this problem. A NODE-BASED subject assigns a
+winding number to every point it emits, and the bench matches
+ground-truth points to those nodes under section 3. A PAIRWISE subject
+answers a question about two given points: how many windings apart are
+they. winding-sync is the first kind; the E1 estimator of winding-ruler
+is the second, and so are ray or integral based predictors generally.
+For a pairwise subject the matching rule does not apply at all: the
+subject is handed the ground-truth pair itself, so there is no
+nearest-node search, no tolerance, and the A10 density gate is moot.
+Coverage becomes the fraction of GT pairs the subject can answer, which
+for an integral estimator is the fraction whose ray stays inside the
+available volume.
+This makes pairwise subjects EASIER on coverage and neither easier nor
+harder on accuracy: they are asked precisely the question the bench
+scores, with no localisation step in between. A pairwise M1 and a
+node-based M1 are therefore NOT directly comparable, and every summary
+records subject_kind so the difference travels with the number.
+
+### A14 — 2026-07-29 — S-D: the E1 estimator of this benchmark's own
+author, scored held-out
+FIDELITY FIRST. gauge/e1.py reimplements the prediction path of
+winding-ruler concordance/ruler_concordance_v1_5.py. Verified against
+the original on 300 pairs of the development window: maximum absolute
+difference between the two ray integrals 0.000e+00. Bit-identical, not
+approximated.
+FROZEN PARAMETERS. k = 2.773 and orient = +1, the values the estimator
+carried out of its development window (z10000-11000, split seed 2).
+They are NOT refitted per region. Refitting would test the mechanism
+rather than the calibration, and would apply a looser rule to this
+benchmark's own estimator than A11 applies to anyone else's tool.
+RESULT, annotated arm, PHerc Paris 4:
+  in-sample (706 pairs inside the development window):
+    M1 0.900 at dw=1 (n=201), M2 0.390, M4 1.000
+  held-out (7450 pairs outside it, the comparable line):
+    M1 0.923 at dw=1 (n=1718), M2 0.575, M4 1.000
+The calibration transfers. Parameters fitted on a 1000-slice window
+hold their dw=1 accuracy on a sample 8.5x larger and geographically
+disjoint from it, with no adjustment. The July criterion for this
+estimator was >= 80% at dw=1; the held-out line gives 92.3%.
+WHAT GOT WORSE, and was expected: M2 rises from 0.390 to 0.575, which
+is the known degradation at larger |dw| (92% at dw=1 against 18% at
+dw=6 in the July table). E1 is a unit-step estimator; a constraint
+chain does not jump, so dw=1 is the load-bearing case.
+WHAT IS NEW AND NEGATIVE. The confidence curve, measured on real data
+for the first time because M3 did not exist in July: on the held-out
+line the least-confident decile scores 0.42 and the most-confident
+0.53. Eleven points of spread means the distance from the rounding
+boundary barely predicts whether the answer is right. The estimator's
+confidence is close to uninformative, and no internal measure would
+have shown this.
+NOT COMPARABLE with A12. The 0.923 here and the 0.050 there are on
+different arms and, more importantly, different subject kinds (A13).
+E1 is handed the pair; winding-sync has to localise the points among
+its own nodes first. Any table putting them side by side must carry
+both differences.
+Order of measurement, for the record: the external subject was scored
+first, with a gate that protected it from an unfair number, and the
+author's own estimator second, with fidelity verified and its own
+weakness published.

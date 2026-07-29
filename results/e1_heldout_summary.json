@@ -1,0 +1,84 @@
+{
+  "n_pairs_gt": 7450,
+  "n_scorable": 7450,
+  "M4_coverage": 1.0,
+  "n_dw1": 1718,
+  "M1_exact_dw1": 0.9225844004656577,
+  "M2_mae": 0.5751677852348993,
+  "M3_bins": [
+    {
+      "bin": 0,
+      "n": 745,
+      "conf_mean": 0.05622672271936443,
+      "acc": 0.4161073825503356
+    },
+    {
+      "bin": 1,
+      "n": 745,
+      "conf_mean": 0.1627532633835737,
+      "acc": 0.45100671140939597
+    },
+    {
+      "bin": 2,
+      "n": 745,
+      "conf_mean": 0.2659993634408849,
+      "acc": 0.4657718120805369
+    },
+    {
+      "bin": 3,
+      "n": 745,
+      "conf_mean": 0.3627560082609934,
+      "acc": 0.5275167785234899
+    },
+    {
+      "bin": 4,
+      "n": 745,
+      "conf_mean": 0.45735643532069076,
+      "acc": 0.574496644295302
+    },
+    {
+      "bin": 5,
+      "n": 745,
+      "conf_mean": 0.5523064815082492,
+      "acc": 0.5610738255033557
+    },
+    {
+      "bin": 6,
+      "n": 745,
+      "conf_mean": 0.6473234227722836,
+      "acc": 0.5865771812080537
+    },
+    {
+      "bin": 7,
+      "n": 745,
+      "conf_mean": 0.745685894496589,
+      "acc": 0.5463087248322148
+    },
+    {
+      "bin": 8,
+      "n": 745,
+      "conf_mean": 0.8450208091402998,
+      "acc": 0.5919463087248322
+    },
+    {
+      "bin": 9,
+      "n": 745,
+      "conf_mean": 0.9467252853848959,
+      "acc": 0.5315436241610738
+    }
+  ],
+  "subject_kind": "pairwise",
+  "subject": "E1/held-out",
+  "gt_arm": "paris4-annotations",
+  "provenance": "independent",
+  "provenance_note": "E1 restricted to pairs outside the z10000-11000 development window",
+  "publishable_as_headline": true,
+  "estimator": {
+    "k": 2.773,
+    "orient": 1,
+    "frozen": true,
+    "source": "winding-ruler concordance v1_5",
+    "n_pairs": 8156,
+    "n_answered": 8156
+  }
+}
