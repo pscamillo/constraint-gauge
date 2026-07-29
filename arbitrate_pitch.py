@@ -16,6 +16,8 @@ limit (A6.1). Verdict letters are the pre-registered ones from 6.2.
 import argparse
 import json
 
+import os
+
 import numpy as np
 
 from gauge import gt as gt_mod
@@ -56,13 +58,62 @@ def main():
     apm = pitch_mod.allpairs_spacing_um(xyz, pairs, a.um_per_vox)
     ap_med = float(np.median(apm)) if len(apm) else float("nan")
 
-    letter, why = pitch_mod.verdict(limit, lo, hi)
+    ok, reasons = pitch_mod.validate_extrapolation(limit, lo, hi, curve)
     print(f"\nextrapolated limit: {limit:.1f} um "
           f"[95% {lo:.1f}, {hi:.1f}], fit r2 {r2:.3f}")
     print(f"allpairs median (ceiling): {ap_med:.0f} um")
-    print(f"\nVERDICT ({a.arm}): ({letter}) {why}")
+
+    direct = None
+    if a.gt_mesh:
+        from gauge.meshgt import mesh_spacing_um
+        import glob
+        allsp, per = [], []
+        for d0 in sorted(glob.glob(os.path.join(a.gt_mesh, "*"))):
+            if not os.path.isdir(d0):
+                continue
+            sp, info = mesh_spacing_um(d0, a.um_per_vox)
+            if info["n"]:
+                allsp.append(sp)
+                per.append({"mesh": os.path.basename(d0), **info})
+        if allsp:
+            allsp = np.concatenate(allsp)
+            direct = {"n": int(len(allsp)),
+                      "median_um": float(np.median(allsp)),
+                      "q1_um": float(np.percentile(allsp, 25)),
+                      "q3_um": float(np.percentile(allsp, 75)),
+                      "per_mesh": per}
+            print("\ndirect mesh estimator (A6.3), no extrapolation:")
+            for p in per:
+                print(f"  {p['mesh']}: n {p['n']:6d}  "
+                      f"median {p['median_um']:6.1f} um  "
+                      f"[q1 {p['q1_um']:.1f}, q3 {p['q3_um']:.1f}]")
+            print(f"  POOLED: n {direct['n']}, median "
+                  f"{direct['median_um']:.1f} um "
+                  f"[q1 {direct['q1_um']:.1f}, q3 {direct['q3_um']:.1f}]")
+
+    if direct is not None:
+        boot = np.random.default_rng(1)
+        meds = [float(np.median(boot.choice(allsp, len(allsp))))
+                for _ in range(200)]
+        dlo, dhi = float(np.percentile(meds, 2.5)), \
+            float(np.percentile(meds, 97.5))
+        letter, why = pitch_mod.verdict(direct["median_um"], dlo, dhi)
+        print(f"\nVERDICT ({a.arm}, direct estimator, "
+              f"95% [{dlo:.1f}, {dhi:.1f}]): ({letter}) {why}")
+        print("  note: the direct median is an upper bound "
+              "(second-order sampling inflation, ~1.3%)")
+    elif ok:
+        letter, why = pitch_mod.verdict(limit, lo, hi)
+        print(f"\nVERDICT ({a.arm}): ({letter}) {why}")
+    else:
+        letter = "e"
+        why = ("extrapolation invalid: " + "; ".join(reasons))
+        print(f"\nVERDICT ({a.arm}): (e) {why}")
 
     res = {"arm": a.arm, "points": int(len(xyz)),
+           "direct_estimator": direct,
+           "extrapolation_valid": bool(ok),
+           "extrapolation_issues": reasons,
            "collections": int(len(np.unique(coll))),
            "estimator": "nearest adjacent-winding, "
                         "density-extrapolated (A6.1)",

@@ -166,3 +166,84 @@ def load_mesh_gt(mesh_dir, stride=8, guard_vox=None, trim_wraps=1,
             "row_wrap_counts": row_counts,
             "points": int(keep.sum())}
     return xyz, wind, coll, info
+
+
+def mesh_spacing_um(mesh_dir, um_per_vox, stride_v=4, stride_u=4,
+                    trim_wraps=1):
+    """Perpendicular sheet spacing measured directly from a mesh
+    (addendum A6.3).
+
+    The grid samples each wrap densely along u (one grid step, 20 vox
+    on the GP meshes) compared with the gap between wraps (60-100 vox),
+    so the distance from a point on wrap k to the CURVE of wrap k+1 at
+    the same height v is the perpendicular spacing, with second-order
+    error only: a foot point falling between two samples inflates the
+    measurement by step^2/(8 d^2), about 1.3% at these scales, always
+    upward. No density extrapolation and no axis: the parametrization
+    supplies the wrap-to-wrap correspondence.
+
+    Note the contrast with the annotated arm, where sampling is sparser
+    than the gap and the same estimator needs the A6.1 convergence
+    treatment.
+
+    Returns (spacings_um, info) with one measurement per sampled cell.
+    """
+    import json
+    try:
+        from scipy.spatial import cKDTree
+    except ImportError:
+        cKDTree = None
+    x, y, z, valid = _load_tifxyz(mesh_dir)
+    meta = json.load(open(os.path.join(mesh_dir, "meta.json")))
+    step_vox = 1.0 / float(meta["scale"][0])
+    guard = 10.0 * step_vox
+    if _arc_axis(x, y, z, valid) == 0:
+        x, y, z, valid = x.T, y.T, z.T, valid.T
+    V, U = z.shape
+
+    counts = valid.sum(axis=1)
+    good = np.nonzero(counts >= 0.5 * counts.max())[0]
+    picks = good[np.linspace(0, len(good) - 1,
+                             min(5, len(good))).astype(int)]
+    results = [_row_chain(x, y, z, valid, v, guard) for v in picks]
+    row_counts = [len(c) - 1 for _, c, _ in results]
+    vals, freq = np.unique(row_counts, return_counts=True)
+    modal = int(vals[np.argmax(freq)])
+    cands = [(v, r) for v, r in zip(picks, results)
+             if len(r[1]) - 1 == modal]
+    vref, (cols, chain, _) = max(cands, key=lambda t: len(t[1][0]))
+    if modal < 2:
+        return np.empty(0), {"n_wraps": modal, "n": 0}
+
+    bounds_u = cols[chain]
+    out = []
+    for k in range(trim_wraps, modal - 1 - trim_wraps + 1):
+        ua0, ua1 = bounds_u[k], bounds_u[k + 1]
+        ub0, ub1 = bounds_u[k + 1], bounds_u[min(k + 2, modal)]
+        if ub1 <= ub0:
+            continue
+        for v in range(0, V, stride_v):
+            ua = np.arange(ua0, ua1, stride_u)
+            ua = ua[valid[v, ua]]
+            ub = np.arange(ub0, ub1)
+            ub = ub[valid[v, ub]]
+            if len(ua) < 3 or len(ub) < 3:
+                continue
+            A = np.column_stack([x[v, ua], y[v, ua], z[v, ua]])
+            B = np.column_stack([x[v, ub], y[v, ub], z[v, ub]])
+            if cKDTree is not None:
+                d, _ = cKDTree(B).query(A, k=1, workers=-1)
+            else:
+                d = np.sqrt(((A[:, None, :] - B[None, :, :]) ** 2
+                             ).sum(-1).min(axis=1))
+            # drop measurements at the ends of the neighbour curve,
+            # where the true foot point may lie outside the sampled span
+            keep = (d > 0) & (d < 0.5 * (ua1 - ua0) * step_vox)
+            out.append(d[keep])
+    if not out or not len(np.concatenate(out)):
+        return np.empty(0), {"n_wraps": modal, "n": 0}
+    d = np.concatenate(out) * um_per_vox
+    return d, {"n_wraps": modal, "n": int(len(d)),
+               "median_um": float(np.median(d)),
+               "q1_um": float(np.percentile(d, 25)),
+               "q3_um": float(np.percentile(d, 75))}

@@ -157,3 +157,40 @@ def extrapolate_ci(xyz, wind, coll, um_per_vox, n_boot=40,
     return (limit, float(np.percentile(lims, 2.5)),
             float(np.percentile(lims, 97.5)),
             float(np.median(r2s)), curve)
+
+
+def validate_extrapolation(limit, lo, hi, curve, min_r2=0.9,
+                           plateau_tol=0.10):
+    """Validity gate for a density-extrapolated estimate (A6.3).
+
+    An extrapolated limit may only support a verdict if
+      1. the fit explains the curve: r2 >= min_r2
+      2. the point estimate lies inside its own bootstrap interval
+      3. the curve has reached a plateau: the last two densities differ
+         by less than plateau_tol
+    Otherwise the arm returns verdict (e), ground truth insufficient.
+
+    Returns (ok, reasons) with reasons listing every failed check.
+    """
+    reasons = []
+    n = np.array([c["n_est"] for c in curve], float)
+    y = np.array([c["median_um"] for c in curve], float) ** 2
+    x = 1.0 / n
+    A = np.column_stack([np.ones_like(x), x])
+    coef, *_ = np.linalg.lstsq(A, y, rcond=None)
+    pred = A @ coef
+    ss_tot = float(((y - y.mean()) ** 2).sum())
+    r2 = 1.0 - float(((y - pred) ** 2).sum()) / ss_tot if ss_tot > 0 \
+        else float("nan")
+    if not (r2 >= min_r2):
+        reasons.append(f"fit r2 {r2:.3f} < {min_r2}")
+    if not (np.isfinite(limit) and lo <= limit <= hi):
+        reasons.append(f"point estimate {limit:.1f} outside its own "
+                       f"interval [{lo:.1f}, {hi:.1f}]")
+    med = [c["median_um"] for c in curve]
+    if len(med) >= 2:
+        rel = abs(med[-1] - med[-2]) / max(med[-1], 1e-9)
+        if rel > plateau_tol:
+            reasons.append(f"curve has not reached a plateau: last two "
+                           f"densities differ by {rel:.0%}")
+    return (len(reasons) == 0), reasons
