@@ -51,25 +51,53 @@ def _arc_axis(x, y, z, valid):
 
 
 def _wrap_chain(row_xyz, s, guard_vox):
-    """Chain of wrap crossings along one row. The next node is the
-    nearest-in-3D point among those that have WRAPPED AROUND: chord
-    much shorter than arc (chord/arc < 0.5), a scale-free criterion
-    with no spacing constant. guard_vox only skips immediate grid
-    neighbors."""
+    """Chain of wrap crossings along one row.
+
+    A true wrap return has two signatures at once: the chord has come
+    back DOWN to sheet-spacing scale, and the point has wrapped (chord
+    much shorter than arc). Both are self-derived, no spacing constant:
+    the global minimum of the chord ahead IS a measurement of the local
+    sheet spacing, so a return is any point with
+
+        chord <= 5 x (min chord ahead)   and   chord < 0.5 x arc
+
+    beyond the grid-neighbor guard. The next node is the argmin of the
+    chord inside the FIRST contiguous run of that mask: the earliest
+    genuine return, immune both to far-end drift (which fooled a global
+    argmin) and to early chord/arc triggers at ~0.6 turn (excluded by
+    the depth criterion, chord there is still diameter-scale).
+    """
     chain = [0]
+    n = len(s)
     while True:
         i = chain[-1]
-        ds = s - s[i]
+        d = np.linalg.norm(row_xyz[i + 1:] - row_xyz[i], axis=1)
+        ds = s[i + 1:] - s[i]
         ahead = ds > guard_vox
         if not ahead.any():
             break
-        d = np.linalg.norm(row_xyz - row_xyz[i], axis=1)
-        wrapped = ahead & (d < 0.5 * ds)
-        if not wrapped.any():
+        dmin = d[ahead].min()
+        mask = ahead & (d <= 5.0 * dmin) & (d < 0.5 * ds)
+        idx = np.nonzero(mask)[0]
+        if idx.size == 0:
             break
-        cand = np.nonzero(wrapped)[0]
-        chain.append(int(cand[np.argmin(d[cand])]))
+        gaps = np.nonzero(np.diff(idx) > 1)[0]
+        run0 = idx[:gaps[0] + 1] if gaps.size else idx
+        chain.append(i + 1 + int(run0[np.argmin(d[run0])]))
     return chain
+
+
+def _row_chain(x, y, z, valid, v, guard_vox):
+    """Run the chain on grid row v; returns (cols, chain, arcs)."""
+    cols = np.nonzero(valid[v])[0]
+    if len(cols) < 3:
+        return cols, [0], np.empty(0)
+    row = np.column_stack([x[v, cols], y[v, cols], z[v, cols]])
+    seg = np.linalg.norm(np.diff(row, axis=0), axis=1)
+    s = np.concatenate([[0.0], np.cumsum(seg)])
+    chain = _wrap_chain(row, s, guard_vox)
+    arcs = np.diff(s[np.asarray(chain)]) if len(chain) > 1 else np.empty(0)
+    return cols, chain, arcs
 
 
 def load_mesh_gt(mesh_dir, stride=8, guard_vox=None, trim_wraps=1,
@@ -97,16 +125,22 @@ def load_mesh_gt(mesh_dir, stride=8, guard_vox=None, trim_wraps=1,
         x, y, z, valid = x.T, y.T, z.T, valid.T
     V, U = z.shape
 
-    # mid valid row for the chain
+    # multi-row consensus: run the chain on up to 5 well-covered rows,
+    # modal wrap count wins, best row of the modal count gives the
+    # boundaries. A fold that fools one row does not fool five heights.
     counts = valid.sum(axis=1)
-    vmid = int(np.argmax(counts))
-    cols = np.nonzero(valid[vmid])[0]
-    row = np.column_stack([x[vmid, cols], y[vmid, cols], z[vmid, cols]])
-    seg = np.linalg.norm(np.diff(row, axis=0), axis=1)
-    s = np.concatenate([[0.0], np.cumsum(seg)])
-
-    chain = _wrap_chain(row, s, guard_vox)
-    n_wraps = len(chain) - 1
+    good = np.nonzero(counts >= 0.5 * counts.max())[0]
+    picks = good[np.linspace(0, len(good) - 1, min(5, len(good))).astype(int)]
+    results = []
+    for v in picks:
+        cols_v, chain_v, arcs_v = _row_chain(x, y, z, valid, v, guard_vox)
+        results.append((v, cols_v, chain_v, arcs_v))
+    row_counts = [len(c) - 1 for _, _, c, _ in results]
+    vals, freq = np.unique(row_counts, return_counts=True)
+    modal = int(vals[np.argmax(freq)])
+    cands = [r for r, rc in zip(results, row_counts) if rc == modal]
+    vmid, cols, chain, arcs_mid = max(cands, key=lambda r: len(r[1]))
+    n_wraps = modal
     if n_wraps < 2 * trim_wraps + 1:
         raise ValueError(f"only {n_wraps} wraps found; lower trim/guard")
 
@@ -128,6 +162,7 @@ def load_mesh_gt(mesh_dir, stride=8, guard_vox=None, trim_wraps=1,
     cid = collection or os.path.basename(os.path.normpath(mesh_dir))
     coll = np.array([cid] * len(wind), dtype=object)
     info = {"n_wraps": n_wraps, "trimmed": trim_wraps,
-            "wrap_arc_vox": np.diff(s[np.asarray(chain)]).tolist(),
+            "wrap_arc_vox": arcs_mid.tolist(),
+            "row_wrap_counts": row_counts,
             "points": int(keep.sum())}
     return xyz, wind, coll, info

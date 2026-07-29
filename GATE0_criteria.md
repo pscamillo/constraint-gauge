@@ -235,3 +235,22 @@ in-sample. Para S-F: Paris 4 = teste independente; 1218 = reportado com
 asterisco shared-parent. Para S-D (E1, do autor deste benchmark): janela
 z10000-11000 = in-sample; demais pares = independent. Nenhuma linha
 shared-parent ou in-sample e comparavel entre sujeitos sem o rotulo.
+
+### A3.2 — 2026-07-29 — cruzamento por profundidade + consenso de linhas
+(substitui o detector de cadeia do A3.1; motivado por falha em mesh real)
+Regra: um retorno de volta e o primeiro trecho contiguo onde
+corda <= 5 x (menor corda a frente) E corda < 0.5 x arco; o no e o
+argmin da corda nesse trecho. A menor corda a frente E uma medicao do
+espacamento local entre folhas, entao ambos os criterios sao
+adimensionais e auto-derivados: sem eixo, sem constante de pitch.
+Consenso: a cadeia roda em 5 linhas bem cobertas do grid; a contagem
+modal vence e a melhor linha modal da as fronteiras. Uma dobra que
+engana uma linha nao engana cinco alturas.
+Resultado nas 10 meshes GP do Paris 4: 10/10 extraem, arcos monotonicos
+em todas; a mesh que falhava (20231005123336) sai de 1 volta espuria de
+93k vox para 4 voltas de ~23k (4 x 23.3k = arco total, ao voxel).
+Quatro meshes contam 1 volta a menos que a leitura de linha unica:
+direcao conservadora — subcontar perde cobertura, nunca corrompe
+rotulos, pois as voltas mantidas sao internamente consistentes.
+Bracos totais: 271864 pontos de mesh + 2173 anotados, mesmo frame
+(volume 20260411134726, z max 75784 comporta ambos).
