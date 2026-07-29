@@ -283,3 +283,27 @@ por bloco: memoria O(max_pairs), nao O(todos os pares). Vizinho mais
 proximo (matcher e tau A2.2) passa a usar KD-tree com fallback para
 forca bruta em blocos. Nenhum criterio mudou; o mesmo self-test que
 consumia 31 GB e nao terminava agora roda em 2.4 s com 775 MB.
+
+### A6.1 — 2026-07-29 — estimador e curva de convergencia da arbitragem
+(registra o metodo ANTES de qualquer medicao real; o veredito continua
+sendo o do 6.2)
+Dois estimadores reportados lado a lado. NEAREST: distancia de cada
+ponto anotado ao vizinho mais proximo em winding adjacente, mediana
+sobre pontos — e exatamente 2x a tolerancia A2.2, isto e, a grandeza
+contra a qual um gerador realmente compete. E um LIMITE SUPERIOR do
+espacamento perpendicular: dois pontos anotados raramente estao
+perpendiculares atraves do vao. ALLPAIRS: mediana sobre todos os pares
+dw=1, leitura literal do 6.1, reportada como teto.
+Curva de convergencia: o vies do nearest encolhe com a densidade de
+amostragem. Amostrando o mesmo braco em varias densidades traca-se uma
+curva decrescente cujo limite e o espacamento fisico. Lei de
+convergencia derivada da geometria: o parceiro mais proximo esta a
+sqrt(d^2 + r^2) com r^2 ~ A/n, entao mediana^2 = d^2 + b/n, e o
+intercepto do ajuste linear de mediana^2 contra 1/n da d^2. Intervalo
+por bootstrap sobre os pontos de GT (curva refeita em cada replica).
+Validado em tests/test_pitch.py contra folhas sinteticas de espacamento
+CONHECIDO (180 um): estimador nunca subestima, decresce com densidade,
+limite extrapolado 181.9 um (erro 1.1%, r2 0.999), allpairs 4971 um
+confirmando que e teto e nao competidor. Registro de erro: o primeiro
+modelo tentado (linear em n^-1/2) subestimava 16% e foi rejeitado pelo
+proprio teste sintetico antes de qualquer contato com dado real.
