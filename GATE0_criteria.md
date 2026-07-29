@@ -908,3 +908,19 @@ while the five uncorrected meshes alone give the same 180.0 median);
 match.py's docstring described the superseded 3.3 rule as the one in
 force; and A11, cited since 29/07, is appended above with a discovery
 note.
+
+### A21 — 2026-07-29 — the S-E gate ratio was measured pre-fix
+Regenerating all standing results at the audit head (A20 item 14)
+changed exactly one number. The three S-E summaries reported node gap
+21.0 vox, ratio 1.15; the rerun gives 27.0 vox, ratio 1.47. Cause: the
+committed S-E runs predate the node_gap deduplication fix recorded in
+A19, and those adapters contain duplicate coordinates, whose zero
+distances pulled the median down. A gap of 21 vox is geometrically
+impossible for distinct points on the ~25 vox grid those submissions
+use; 27.0 is the post-fix measurement. The winding-sync gates are
+unchanged (68.0 and 88.8 vox), since its seeds carry no duplicates.
+Nothing downstream moves: the runs were NOT SCORABLE under both
+figures, M1/M2 in diagnostic_only are identical to three decimals, and
+the resubmission guidance (nodes finer than about 18 vox) is
+unchanged. The ratio 1.15 quoted inside A19 and sent to the author by
+DM is superseded by 1.47; she is being told with this commit.
