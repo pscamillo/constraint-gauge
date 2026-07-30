@@ -944,3 +944,13 @@ field's 216-winding span exceeds the scroll weakens from about
 2.4-3x to about 1.6x the true count. What does not change: the span
 still exceeds the scroll, the BFS span (257) more so, and every
 M1/M2 figure, which never touched wrap counts.
+
+### A23 — 2026-07-30 — disclosure: who performed the A20 audit
+The A20 audit was performed by Claude (Anthropic), working through this
+repository line by line at the author's request, in the same working
+arrangement used throughout this project. The findings were verified
+against the repository and its history before being adopted; every
+correction was reviewed and committed by the author. Recorded here
+because the community has begun stating model involvement explicitly
+(#robots), and this document should not be behind that standard. A22
+remains Joseph's catch, made by him, unassisted.
