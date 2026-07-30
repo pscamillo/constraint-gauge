@@ -1,94 +1,89 @@
 {
   "n_pairs_gt": 8156,
-  "n_scorable": 1048,
-  "M4_coverage": 0.12849435998038253,
-  "n_dw1": 214,
+  "n_scorable": 8156,
+  "M4_coverage": 1.0,
+  "n_dw1": 1919,
+  "M1_exact_dw1": 0.29546638874413755,
+  "M2_mae": 2.58662881553177,
+  "M3_bins": [
+    {
+      "bin": 0,
+      "n": 813,
+      "conf_mean": 0.2235661078490289,
+      "acc": 0.2939729397293973
+    },
+    {
+      "bin": 1,
+      "n": 818,
+      "conf_mean": 0.31819216907578296,
+      "acc": 0.2530562347188264
+    },
+    {
+      "bin": 2,
+      "n": 816,
+      "conf_mean": 0.37597460466841887,
+      "acc": 0.2769607843137255
+    },
+    {
+      "bin": 3,
+      "n": 815,
+      "conf_mean": 0.42935063138616497,
+      "acc": 0.35828220858895704
+    },
+    {
+      "bin": 4,
+      "n": 816,
+      "conf_mean": 0.47549248617841183,
+      "acc": 0.18872549019607843
+    },
+    {
+      "bin": 5,
+      "n": 816,
+      "conf_mean": 0.5224268455254832,
+      "acc": 0.16544117647058823
+    },
+    {
+      "bin": 6,
+      "n": 810,
+      "conf_mean": 0.5722704559233838,
+      "acc": 0.20987654320987653
+    },
+    {
+      "bin": 7,
+      "n": 813,
+      "conf_mean": 0.6177211419762355,
+      "acc": 0.09348093480934809
+    },
+    {
+      "bin": 8,
+      "n": 818,
+      "conf_mean": 0.6688306807307296,
+      "acc": 0.08068459657701711
+    },
+    {
+      "bin": 9,
+      "n": 821,
+      "conf_mean": 0.7612727254107874,
+      "acc": 0.007308160779537149
+    }
+  ],
+  "M3_ece_rank": 0.38384011770475723,
   "M3_note": "confidence is an arbitrary monotone scale; the curve shows whether higher conf means higher accuracy, not absolute probabilities",
-  "adapter": "improved-ST-Lsync (radius-conf)",
+  "adapter": "improved-ST-Lsync (radius-conf) [finer nodes, dense-dedup]",
   "planar_matching": false,
   "density_gate": {
-    "node_gap_vox": 27.018512172212592,
+    "node_gap_vox": 9.433981132056603,
     "sheet_gap_vox": 18.34397340862694,
-    "ratio": 1.4728822142484204,
+    "ratio": 0.5142823161540302,
     "limit": 1.0,
-    "scorable": false
+    "scorable": true
   },
-  "scorable": false,
-  "diagnostic_only": {
-    "M1_exact_dw1": 0.32710280373831774,
-    "M2_mae": 2.306603756997094,
-    "M3_bins": [
-      {
-        "bin": 0,
-        "n": 104,
-        "conf_mean": 0.24128907626622734,
-        "acc": 0.27884615384615385
-      },
-      {
-        "bin": 1,
-        "n": 104,
-        "conf_mean": 0.3205026974019137,
-        "acc": 0.22115384615384615
-      },
-      {
-        "bin": 2,
-        "n": 102,
-        "conf_mean": 0.3643002721232621,
-        "acc": 0.27450980392156865
-      },
-      {
-        "bin": 3,
-        "n": 107,
-        "conf_mean": 0.3919419973441655,
-        "acc": 0.308411214953271
-      },
-      {
-        "bin": 4,
-        "n": 106,
-        "conf_mean": 0.4251329775144183,
-        "acc": 0.27358490566037735
-      },
-      {
-        "bin": 5,
-        "n": 104,
-        "conf_mean": 0.46547019641214804,
-        "acc": 0.2692307692307692
-      },
-      {
-        "bin": 6,
-        "n": 106,
-        "conf_mean": 0.5121940211091706,
-        "acc": 0.1509433962264151
-      },
-      {
-        "bin": 7,
-        "n": 102,
-        "conf_mean": 0.594856877202433,
-        "acc": 0.27450980392156865
-      },
-      {
-        "bin": 8,
-        "n": 107,
-        "conf_mean": 0.6566182571059844,
-        "acc": 0.1308411214953271
-      },
-      {
-        "bin": 9,
-        "n": 106,
-        "conf_mean": 0.762507241937452,
-        "acc": 0.0
-      }
-    ],
-    "M3_ece_rank": 0.34781491283711374
-  },
-  "M1_exact_dw1": null,
-  "M2_mae": null,
-  "not_scorable_reason": "generator node gap exceeds sheet gap (A10); the run is not scored. diagnostic_only carries the raw figures for the author's diagnosis only",
+  "scorable": true,
   "subject": "S-E-improved-node-radiusconf",
   "gt_arm": "paris4-annotations",
   "provenance": "independent",
   "provenance_note": "submitted by alyalya 29/07: structure-tensor lamina integration with L2 group synchronisation, variants differ in sign anchor and confidence source",
-  "publishable_as_headline": false,
+  "publishable_as_headline": true,
   "tau_vox_mean": 8.80459968149033,
   "tau_vox_median": 9.17198670431347,
   "tau_points_a22": 2173,
