@@ -924,3 +924,23 @@ figures, M1/M2 in diagnostic_only are identical to three decimals, and
 the resubmission guidance (nodes finer than about 18 vox) is
 unchanged. The ratio 1.15 quoted inside A19 and sent to the author by
 DM is superseded by 1.47; she is being told with this commit.
+
+### A22 — 2026-07-30 — the wrap count in A12 was wrong (caught by Joseph)
+A12 said "roughly 70-90 wraps for this scroll by the winding atlas".
+Joseph (winding-sync author) pointed out that GP segments on this
+scroll run to w129, which no 90-wrap scroll can carry. He is right,
+twice over. What the atlas actually records (atlas_collection.csv) is
+surface-prediction crossings per radial ray, at pyramid level 2 with
+threshold 0.2, on the prediction zarr: a detection count on an
+incomplete surface volume, which undercounts physical wraps by
+construction. Its Paris 4 row reads p10 70, median 89, p90 106; A12
+quoted the p10-to-median band as the scroll's wrap count and dropped
+the p90. Re-derived from data: the annotated band alone spans radii
+1.0-21.8 mm about a crude center, about 115 wraps at the 180 um
+pitch, and the w129 segment label puts a hard floor of at least 130
+on the full scroll. Same failure shape as A6.5: a real number cited
+as a different quantity. What changes: the A12 observation that the
+field's 216-winding span exceeds the scroll weakens from about
+2.4-3x to about 1.6x the true count. What does not change: the span
+still exceeds the scroll, the BFS span (257) more so, and every
+M1/M2 figure, which never touched wrap counts.
