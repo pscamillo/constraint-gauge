@@ -909,6 +909,52 @@ match.py's docstring described the superseded 3.3 rule as the one in
 force; and A11, cited since 29/07, is appended above with a discovery
 note.
 
+### A21 — 2026-07-29 — the S-E gate ratio was measured pre-fix
+Regenerating all standing results at the audit head (A20 item 14)
+changed exactly one number. The three S-E summaries reported node gap
+21.0 vox, ratio 1.15; the rerun gives 27.0 vox, ratio 1.47. Cause: the
+committed S-E runs predate the node_gap deduplication fix recorded in
+A19, and those adapters contain duplicate coordinates, whose zero
+distances pulled the median down. A gap of 21 vox is geometrically
+impossible for distinct points on the ~25 vox grid those submissions
+use; 27.0 is the post-fix measurement. The winding-sync gates are
+unchanged (68.0 and 88.8 vox), since its seeds carry no duplicates.
+Nothing downstream moves: the runs were NOT SCORABLE under both
+figures, M1/M2 in diagnostic_only are identical to three decimals, and
+the resubmission guidance (nodes finer than about 18 vox) is
+unchanged. The ratio 1.15 quoted inside A19 and sent to the author by
+DM is superseded by 1.47; she is being told with this commit.
+
+### A22 — 2026-07-30 — the wrap count in A12 was wrong (caught by Joseph)
+A12 said "roughly 70-90 wraps for this scroll by the winding atlas".
+Joseph (winding-sync author) pointed out that GP segments on this
+scroll run to w129, which no 90-wrap scroll can carry. He is right,
+twice over. What the atlas actually records (atlas_collection.csv) is
+surface-prediction crossings per radial ray, at pyramid level 2 with
+threshold 0.2, on the prediction zarr: a detection count on an
+incomplete surface volume, which undercounts physical wraps by
+construction. Its Paris 4 row reads p10 70, median 89, p90 106; A12
+quoted the p10-to-median band as the scroll's wrap count and dropped
+the p90. Re-derived from data: the annotated band alone spans radii
+1.0-21.8 mm about a crude center, about 115 wraps at the 180 um
+pitch, and the w129 segment label puts a hard floor of at least 130
+on the full scroll. Same failure shape as A6.5: a real number cited
+as a different quantity. What changes: the A12 observation that the
+field's 216-winding span exceeds the scroll weakens from about
+2.4-3x to about 1.6x the true count. What does not change: the span
+still exceeds the scroll, the BFS span (257) more so, and every
+M1/M2 figure, which never touched wrap counts.
+
+### A23 — 2026-07-30 — disclosure: who performed the A20 audit
+The A20 audit was performed by Claude (Anthropic), working through this
+repository line by line at the author's request, in the same working
+arrangement used throughout this project. The findings were verified
+against the repository and its history before being adopted; every
+correction was reviewed and committed by the author. Recorded here
+because the community has begun stating model involvement explicitly
+(#robots), and this document should not be behind that standard. A22
+remains Joseph's catch, made by him, unassisted.
+
 ### A24 — 2026-07-30 — the spacing headline read like a constant
 sean (bruniss) pointed out publicly that the announcement and the
 README still presented sheet spacing as a single number, after this

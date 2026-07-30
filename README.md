@@ -259,4 +259,8 @@ Addenda so far came from review by Paul Henderson, sean (bruniss),
 djosey, Iyán Dopico and alyalya, whose submission also found a bug in
 this repository's baseline solver.
 
+Built in pair programming with Claude (Anthropic), who also performed
+the line-by-line audit recorded as A20 (disclosure in A23). Every
+number, commit and decision here was verified and made by the author.
+
 MIT.
