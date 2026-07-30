@@ -211,17 +211,19 @@ that replaced a gate's stated justification after measuring it.
 
 ## Standing results
 
-**Sheet spacing on PHerc Paris 4, in the GP-mesh band (z 29420-73889):
-180.0 um**, 95% across meshes [173.6, 199.5], from nine verified meshes
-with a direct point-to-curve estimator. Independent of the winding
-atlas in input, method and parameters; the atlas entry for Paris 4 is
-182.4 um, 1.3% away. Two of the nine per-mesh medians carry a wrap-skip
-correction (A6.4) and land high, at 262 and 343 um; the five meshes
-needing no correction give the same 180.0 median on their own. The
-annotated arm, lower in the scroll, measures about 145 um locally,
-consistent with the published 136-259 um radial variation; the two
-regions do not overlap (A17), so this headline is a statement about the
-mesh band, not the whole scroll.
+**Two independent methods agree on the Paris 4 median: 180.0 vs
+182.4 um, 1.3% apart.** Sheet spacing is not a constant and this
+headline does not claim one: it varies inside the scroll (per-mesh
+medians 170.7-199.5 in the GP-mesh band before the two wrap-skip
+cases at 262 and 343, A6.4; the annotated band lower in the scroll
+runs about 145 um; published radial variation 136-259 um; the two
+regions do not overlap, A17). What the agreement supports is the
+methods, not a number for the scroll: nine verified meshes with a
+direct point-to-curve estimator (median 180.0, 95% across meshes
+[173.6, 199.5]) against the atlas periodicity estimate (182.4),
+independent in input, method and parameters. The bench itself never
+uses a spacing constant anywhere: matching tolerance is measured at
+each ground-truth point (A2.2).
 
 **Internal agreement is not external accuracy.** On one slice of Paris 4,
 winding-sync's own `consistency()` reports 0.670 exact agreement between
@@ -256,9 +258,5 @@ spacing-prior ablation.
 Addenda so far came from review by Paul Henderson, sean (bruniss),
 djosey, Iyán Dopico and alyalya, whose submission also found a bug in
 this repository's baseline solver.
-
-Built in pair programming with Claude (Anthropic), who also performed
-the line-by-line audit recorded as A20 (disclosure in A23). Every
-number, commit and decision here was verified and made by the author.
 
 MIT.
