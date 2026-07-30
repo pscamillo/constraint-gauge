@@ -249,15 +249,16 @@ between.
 
 Scored: winding-sync/l1 at our stride variant (A11), BFS forest
 baseline on the same graph, E1 (mine, held out, shared-parent per
-A7.2). Gated NOT SCORABLE at author or submitted configuration:
-winding-sync default stride, alyalya's three structure-tensor variants
-(resubmissions pending). Registered, not yet run: Iyán Dopico's
+A7.2), and Aleksei Drobkov's three dense structure-tensor variants,
+the first independent subject to clear the density gate (ratio 0.51,
+coverage 1.000). Gated NOT SCORABLE at author configuration:
+winding-sync default stride. Registered, not yet run: Iyán Dopico's
 constraint chain (S-F), the PHerc1218 arm (GT-2), and the section 5
 spacing-prior ablation.
 
 Addenda so far came from review by Paul Henderson, sean (bruniss),
-djosey, Iyán Dopico and alyalya, whose submission also found a bug in
-this repository's baseline solver.
+djosey, Iyán Dopico and Aleksei Drobkov, whose submission also found a
+bug in this repository's baseline solver.
 
 Built in pair programming with Claude (Anthropic), who also performed
 the line-by-line audit recorded as A20 (disclosure in A23). Every
