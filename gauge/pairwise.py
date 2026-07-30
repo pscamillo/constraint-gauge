@@ -58,6 +58,8 @@ def score_pairs(pairs, result):
     dw_true = pairs["dw"][m].astype(float)
     dw_pred = result.dw_pred[m]
     return {
+        "gt_a": pairs["a"][m],
+        "gt_b": pairs["b"][m],
         "dw_true": dw_true,
         "dw_pred": dw_pred,
         "dw_pred_round": np.round(dw_pred),

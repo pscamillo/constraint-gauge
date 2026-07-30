@@ -19,13 +19,20 @@ import numpy as np
 
 
 def score(pairs, mres, adapter):
-    """Per-pair table as dict of arrays (scorable pairs only)."""
+    """Per-pair table as dict of arrays (scorable pairs only).
+
+    gt_a/gt_b identify the pair: indices into the GT point set used in
+    this run (after any A9 slab restriction), so two runs of the same
+    configuration can be compared pair by pair instead of by position
+    (added after the v0.2.0 rerun needed exactly that)."""
     s = mres.scorable
     a, b = mres.a_pt[s], mres.b_pt[s]
     dw_pred = adapter.winding[b] - adapter.winding[a]
     dw_true = pairs["dw"][s].astype(float)
     conf = np.minimum(adapter.conf[a], adapter.conf[b])
     return {
+        "gt_a": pairs["a"][s],
+        "gt_b": pairs["b"][s],
         "dw_true": dw_true,
         "dw_pred": dw_pred,
         "dw_pred_round": np.round(dw_pred),
