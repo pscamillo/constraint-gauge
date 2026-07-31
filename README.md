@@ -44,7 +44,8 @@ Rules for the file, all of which matter:
 
 - **Coordinates are full-resolution voxels of the volume the arm uses.**
   The two ground-truth arms live in different volumes: the annotated arm
-  in the 7.91 um volume, the mesh arm in the 2.4 um one. Pick the arm
+  on the L2 grid of the 2.4 um rescan (9.6 um/vox; long mis-stated
+as 7.91, A25), the mesh arm in full-resolution 2.4 um voxels. Pick the arm
   you are targeting and use its frame.
 - **Your nodes must be finer than the sheets.** On the annotated arm the
   sheets sit about 18 voxels apart, on the mesh arm about 75. A
@@ -66,7 +67,7 @@ Then:
     python run_gauge.py --gt relative_windings.json \
         --adapter json:yours.json --subject my-generator \
         --gt-arm paris4-annotations \
-        --pitch-um 180 --um-per-vox 7.91 \
+        --pitch-um 180 --um-per-vox 9.6 \
         --out-prefix results/mine_annotations
 
     # verified-mesh arm
@@ -177,14 +178,20 @@ repository.
 ## How ground truth is built
 
 **Annotated arm.** Human point collections, 8156 within-collection pairs
-at dw 1-6 on PHerc Paris 4, in the 7.91 um volume.
+at dw 1-6 on PHerc Paris 4, on the L2 grid of the 2.4 um rescan
+(9.6 um/vox, A25).
 
 **Verified-mesh arm.** Human-verified GP segment meshes, which state
 sheet identity by construction, in the 2.4 um volume. The extractor
 counts a segment's own wraps with no axis and no spacing constant, one
 collection per mesh, seam wraps trimmed. Nine meshes, 289171 points.
 
-**The two arms do not overlap** and never will: the annotated arm sits
+**The two arms live in the same scroll and overlap by about 95 mm**
+once both are read in the same frame: annotated z times 4 spans
+26108-69012 against the mesh band's 29420-73889 (A25 item 4). The
+earlier no-overlap claim compared coordinates across frames; cross-arm
+validation is possible in principle, nothing claimed until the A25
+probe runs. Superseded text: the annotated arm sits
 where the lasagna grad_mag field exists, the mesh arm above it. No
 subject can be cross-validated across them.
 
@@ -216,8 +223,8 @@ that replaced a gate's stated justification after measuring it.
 headline does not claim one: it varies inside the scroll (per-mesh
 medians 170.7-199.5 in the GP-mesh band before the two wrap-skip
 cases at 262 and 343, A6.4; the annotated band lower in the scroll
-runs about 145 um; published radial variation 136-259 um; the two
-regions do not overlap, A17). What the agreement supports is the
+reads about 176 um at the correct 9.6 um/vox frame (A25), in
+agreement with this band rather than in tension with it). What the agreement supports is the
 methods, not a number for the scroll: nine verified meshes with a
 direct point-to-curve estimator (median 180.0, 95% across meshes
 [173.6, 199.5]) against the atlas periodicity estimate (182.4),
