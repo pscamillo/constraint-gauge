@@ -4,11 +4,12 @@
     python run_gauge.py --gt relative_windings.json \
         --adapter json:result.json --subject my-generator \
         --gt-arm paris4-annotations \
-        --pitch-um 180 --um-per-vox 7.91 \
+        --pitch-um 180 --um-per-vox 9.6 \
         --out-prefix paris4_mine
 
-    (the annotated arm lives in the 7.91 um volume; 2.4 um here was the
-     frame error of the A6.3 erratum. The mesh arm is the 2.4 um one.)
+    (the annotated arm lives on the L2 grid of the 2.4 um rescan,
+     9.6 um/vox - it was long mis-stated as 7.91; see A25. The mesh
+     arm is full-resolution 2.4 um.)
 
     python run_gauge.py --gt-mesh data/gp_meshes \
         --adapter json:result.json --subject winding-sync/l1 \

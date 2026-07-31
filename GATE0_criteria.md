@@ -966,3 +966,62 @@ The README headline is reframed: the claim is the agreement between
 two independent methods on a median, not a spacing value for the
 scroll. No measurement changes; the tolerance rule was already
 per-point.
+
+### A25 — 2026-07-31 — the annotated arm's frame was wrong (caught by
+Aleksei Drobkov), and his confirmation is now genuinely independent
+Three parts, all his, delivered in one message on 30/07.
+1. RETRACTION OF THE CIRCULAR CONFIRMATION. The 29/07 report that his
+   GT gave 1203 at 192 and Paris 4 at 182 used this project's atlas
+   values as his anchor, so the agreement was these numbers coming
+   back to us. He caught this himself, unprompted, and asked that the
+   "two scrolls confirmed from outside" framing be dropped. It is
+   dropped; the atlas paragraph is rewritten in this commit.
+2. THE INDEPENDENT MEASUREMENTS, redone properly by him. Paris 4:
+   ~180 um per turn, measured straight from the human winding
+   annotations (per z-slice, radius vs winding, Theil-Sen over
+   angular wedges), scale fixed independently of any pitch value.
+   PHerc1203: 170-190 um, from radial layer counts on the 9.362 um
+   BM18 volume (~130 windings over ~24 mm, five rays, median 173),
+   sanity-checked by unrolled length (pi r^2 / pitch ~ 10.5 m, which
+   a Herculaneum scroll can be; 40 um would give ~34 m, which none
+   is) and by hand-annotating whole sheets on the 2.4 um volume.
+   Both consistent with the atlas entries 182.4 and 192.3. The
+   agreement died as circular and came back real.
+3. THE FRAME BUG. The paris4-annotations arm assumed 7.91 um/vox.
+   His arithmetic: 26% of GT z-coordinates exceed the last slice of
+   the 7.91 volume (GT z to 17253; that volume is 14376 deep), so
+   they cannot live in it. Verified here in minutes: z runs
+   6527-17253 and 25.8% sits above 14376, his numbers to the
+   decimal. The coordinates are on the L2 grid of the 2.4 um rescan
+   (field grid 8174 = 32693/4), i.e. 9.6 um/vox. Third frame error
+   in this project's history (A6.3, the run_gauge docstring, now
+   this) and the first caught from outside.
+   Rerun at 9.6: gate, M1, M2 and M4 byte-identical on all three
+   dense subjects (sheet gap unchanged at 18.3 vox; the median tau
+   sits below the tightened fallback, only the tail clipped, from
+   range 3.4-11.4 to 3.4-9.4). What moves is every physical um read
+   off the arm, by 9.6/7.91 = 1.21: arb_annotations full-density
+   median 145.1 to 176.1 um, extrapolated limit 152.2 to 184.7
+   [180.2, 209.5], which now brackets the atlas 187.3. The A24 line
+   "the annotated band runs about 145 um" becomes about 176,
+   dissolving the two-band tension straight into the 180 agreement.
+   His bug report simplified the scroll. Verdicts unchanged, (e) on
+   scope.
+4. DERIVED CONSEQUENCE, TO BE VERIFIED BY PROBE: with both arms in
+   the same physical volume, annotated z times 4 spans 26108-69012
+   against the mesh band's 29420-73889 - the arms overlap by about
+   95 mm, superseding A17's no-overlap claim, which compared
+   coordinates across frames. E1's mesh-arm coverage of 0.000 (A17)
+   is likely the same artifact (mesh coordinates entering a field
+   indexed for the 9.6 grid without the 4x conversion). If the probe
+   confirms, cross-arm validation becomes possible, including an
+   independent-arm test for E1. Nothing is claimed until measured.
+5. HIS STRUCTURAL NOTE, recorded because the whole pitch debate was
+   missing it: the winding pitch IS one sheet thickness, one wrap =
+   one papyrus sheet (~150-200 um). The finer 10-40 um structure at
+   2.4 um is intra-sheet (recto/verso plies, pith cells,
+   carbonization delamination, which EduceLab notes "increases the
+   number of apparent papyrus layers in CT"). Counting every bright
+   line over-counts windings by splitting single delaminated sheets.
+   The reason naive per-layer counts run low is his sentence, and it
+   goes in the record as his.

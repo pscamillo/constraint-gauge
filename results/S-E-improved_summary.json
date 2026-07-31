@@ -84,13 +84,13 @@
   "provenance": "independent",
   "provenance_note": "submitted by alyalya 29/07: structure-tensor lamina integration with L2 group synchronisation, variants differ in sign anchor and confidence source",
   "publishable_as_headline": true,
-  "tau_vox_mean": 8.80459968149033,
+  "tau_vox_mean": 8.02318563482086,
   "tau_vox_median": 9.17198670431347,
   "tau_points_a22": 2173,
   "tau_points_fallback": 0,
   "tau_mode": "a2.2-measured",
   "pitch_um": 180.0,
-  "um_per_vox": 7.91,
+  "um_per_vox": 9.6,
   "mesh_stride": null,
   "max_pairs": null
 }
