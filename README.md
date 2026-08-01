@@ -230,7 +230,10 @@ direct point-to-curve estimator (median 180.0, 95% across meshes
 [173.6, 199.5]) against the atlas periodicity estimate (182.4),
 independent in input, method and parameters. The bench itself never
 uses a spacing constant anywhere: matching tolerance is measured at
-each ground-truth point (A2.2).
+each ground-truth point (A2.2). And one layer deeper (A26): both
+methods measure the mixture median of a delamination-harmonic
+distribution, not the physical fundamental, which harmonic-safe
+methods place near ~145 um on this scroll.
 
 **Internal agreement is not external accuracy.** On one slice of Paris 4,
 winding-sync's own `consistency()` reports 0.670 exact agreement between

@@ -1025,3 +1025,46 @@ Three parts, all his, delivered in one message on 30/07.
    line over-counts windings by splitting single delaminated sheets.
    The reason naive per-layer counts run low is his sentence, and it
    goes in the record as his.
+
+### A26 — 2026-08-01 — the ~180 was the mixture, not the fundamental
+(caught by Aleksei Drobkov; confirmed against this project's own data)
+On 31/07 he retracted his own ~180 Paris 4 figure as method-unstable,
+remeasured five scrolls with three harmonic-safe method families
+(autocorrelation with 2x-harmonic rejection, mode of consecutive-sheet
+gaps, hand annotation on CT), and proposed the mechanism: methods that
+count windings measure a mixture, because delamination-merged sheets
+are under-counted, while direct inter-sheet spacing measures the
+fundamental.
+THE DISCRIMINATING TEST, run here the same night on this project's own
+GT: distribution of nearest adjacent-winding gaps over all 2173 Paris 4
+annotation points at the 9.6 frame. n=2173, median 176.1, q1 129, q3
+240; MODE 130-140 um, main mass 110-140, long fat tail with lumps near
+170-200 and 280-300+. Not a unimodal ~180: exactly the mixture his
+mechanism predicts. This probe is an upper bound by construction
+(A6.1), so the true perpendicular mode is at or below 130-140, sitting
+on his 143-by-hand and 137-autocorrelation. Honest limit: with sparse
+annotations the tail mixes skipped sheets with lateral distance; the
+test does not separate those. What it settles: the fundamental is not
+~180.
+HIS EVIDENCE, archived under submissions/ (numbers and overlays,
+visually inspected here): five-scroll table with Paris 4 ~145 (CT 150,
+mesh 140, hand 143), 0172 ~160, 1203 ~180, 0139 ~220 and 1667 ~230
+with low harmonics explicitly rejected. His pitch distribution shows
+the fundamental at 143.3 with secondary humps exactly at 2x (287) and
+3x (430) - the delamination harmonics drawn in the data - and the mode
+stable across z-bands and umbilicus choices. His comparison overlay
+shows hand and autocorrelation marks on the same consecutive CT
+sheets, 143 vs 137 um on identical lines. Ten of this project's own
+GP mesh wraps, read consecutively at one slice, gap at ~140.
+CONSEQUENCES. Pitch genuinely varies across the collection (~145-230),
+which preserves the atlas's central claim - the per-scroll table is
+the right artefact - while correcting what the values mean: the atlas
+level-1 periodicity values and this bench's arb medians measure the
+mixture; reproducible and internally consistent, but not fundamentals.
+The atlas Paris 4 entry is corrected; every collection entry needs the
+mode-vs-median treatment before being read as a fundamental. The
+gauge's scores never touched pitch (all voxel-native) and do not move.
+The A24/A25 agreement (176 vs 180-182) is agreement between two
+mixture-measuring methods - real, but one layer shallower than
+physical pitch. His second physics correction in two days; the record
+exists for exactly this.
